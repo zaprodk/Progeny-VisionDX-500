@@ -1,0 +1,226 @@
+</bin/owncom| 22>[fge‚
+Á9DF5D
+]]òµñ22>[fgets(aÂrŠr’‚’j
+]]
+<Ç22>[fgets()=Ó
+]]
+</bin/ownSÑÍ¡)=[CMD=ST¡¹Ñ•ÉacceptTask
+DELME: TaskData is OK
+DELME: CmdID is OK
+DELME: Check for active is OK
+DELME: Not protected cmd | no protected session | cmd from protected session
+DELME: Start/continue protected session is OK
+DELME: Stop/Continue protected session is OK
+DELME: getTaskDataListMem() is OK
+
+Wait task queue:
+	sesID=0000BC09DF5D, cmdID=500, errCode=0:0
+Execute task queue:
+Error task queue:
+DELME: Exit acceptTask() with ret=0
+
+Wait task queue:
+Execute task queue:
+	sesID=0000BC09DF5D, cmdID=500, errCode=0:0
+Error task queue:
+Task (ID=500, No=129) execution time 2.470 s
+
+Wait task queue:
+Execute task queue:
+Error task queue:
+</bin/owncom| 22>[fge‚
+Á9DF5D
+]]òµñ22>[fgets(aÂrŠr’‚’j
+]]
+<Ç22>[fgets()=Ó
+]]
+</bin/ownSÑÍ¡)=[CMD=STQ”‹•“acceptTask
+DELME: TaskData is OK
+DELME: CmdID is OK
+DELME: Check for active is OK
+DELME: Not protected cmd | no protected session | cmd from protected session
+DELME: Start/continue protected session is OK
+DELME: Stop/Continue protected session is OK
+DELME: getTaskDataListMem() is OK
+
+Wait task queue:
+	sesID=0000BC09DF5D, cmdID=500, errCode=0:0
+Execute task queue:
+Error task queue:
+DELME: Exit acceptTask() with ret=0
+
+Wait task queue:
+Execute task queue:
+	sesID=0000BC09DF5D, cmdID=500, errCode=0:0
+Error task queue:
+Task (ID=500, No=130) execution time 2.460 s
+
+Wait task queue:
+Execute task queue:
+Error task queue:
+</bin/owncom| 22>[fge‚
+Á9DF5D
+]]òµñ22>[fgets(aÂrŠr’‚’j
+]]
+<Ç22>[fgets()=Ó
+]]
+</bin/ownSÑÍ¡)=[CMD=ST¡¹Ñ•“acceptTask
+DELME: TaskData is OK
+DELME: CmdID is OK
+DELME: Check for active is OK
+DELME: Not protected cmd | no protected session | cmd from protected session
+DELME: Start/continue protected session is OK
+DELME: Stop/Continue protected session is OK
+DELME: getTaskDataListMem() is OK
+
+Wait task queue:
+	sesID=0000BC09DF5D, cmdID=500, errCode=0:0
+Execute task queue:
+Error task queue:
+DELME: Exit acceptTask() with ret=0
+
+Wait task queue:
+Execute task queue:
+	sesID=0000BC09DF5D, cmdID=500, errCode=0:0
+Error task queue:
+Task (ID=500, No=131) execution time 2.530 s
+
+Wait task queue:
+Execute task queue:
+Error task queue:
+</bin/owncom| 22>[fgets 
+Á9DF5D
+]]
+<Ç22>[fgets()=ãŠr’‚’j
+]]
+</b!’òÚ™•ÑÍ¡)=[P×Õ¥</bin/ownco5¡)=[CMD=CAPTUâ½owncom| 22>[Fõ0
+]]
+nter acceptTask
+DELME: TaskData is OK
+DELME: CmdID is OK
+DELME: Check for active is OK
+DELME: Not protected cmd | no protected session | cmd from protected session
+Start activateHardware(00e4ae14)
+turnOnFPGA()
+Configuration is 1021-> present=1, type=0, valid=0
+Configuration is 1021-> present=1, type=0, valid=0
+Configuration is 1021-> present=1, type=0, valid=0
+Configuration is 1021-> present=1, type=0, valid=0
+Configuration is 1021-> present=1, type=0, valid=0
+Final Configuration is 10a1-> present=1, type=0, valid=1
+Sensor is 0
+Frame memory callback (pFMCallback=00e4ae14, pConfigFrameMem=00e43e16)
+Start __setCurrCCD()
+Exit __setCurrCCD()
+size = 547 x 7572
+DELME: Exit from getSensor() with 0
+Uploading AFE configuration data...
+Uploading CCD configuration data...
+DELME: Exit from configFPGA with 0
+activateHardware() is done
+DELME: activateMem() returned 0
+DELME: Start/continue protected session is OK
+DELME: Stop/Continue protected session is OK
+DELME: getTaskDataListMem() is OK
+
+Wait task queue:
+	sesID=0000BC09DF5D, cmdID=103, errCode=0:0
+Execute task queue:
+Error task queue:
+DELME: Exit acceptTask() with ret=0
+
+Wait task queue:
+Execute task queue:
+	sesID=0000BC09DF5D, cmdID=103, errCode=0:0
+Error task queue:
+</bin/owncom| 22>[fge‚
+Á9DF5D
+]]òµñ22>[fgets(aÂrŠr’‚’j
+]]
+<Ç22>[fgets()=Ó
+]]
+</bin/ownSÑÍ¡)=[CMD=CL¯¹Ñ•ÉacceptTask
+DELME: TaskData is OK
+DELME: CmdID is OK
+DELME: Check for active is OK
+DELME: Not protected cmd | no protected session | cmd from protected session
+DELME: Start/continue protected session is OK
+Min=0, Max=65535
+
+Min=0, Max=65535
+
+DELME: Stop/Continue protected session is OK
+DELME: getTaskDataListMem() is OK
+
+Wait task queue:
+	sesID=0000BC09DF5D, cmdID=205, errCode=0:0
+Execute task queue:
+	sesID=0000BC09DF5D, cmdID=103, errCode=0:0
+Error task queue:
+DELME: Exit acceptTask() with ret=0
+
+Wait task queue:
+Execute task queue:
+	sesID=0000BC09DF5D, cmdID=103, errCode=0:0
+	sesID=0000BC09DF5D, cmdID=205, errCode=0:0
+Error task queue:
+</bin/owncom| 22>[fge‚
+Á9DF5D
+]]òµñ22>[fgets(ÉÂrŠr’‚’j
+]]
+<Ç22>[fgets()=Ó
+]]
+</bin/ownSÑÍ¡)=[CMD=ST¡¹Ñ•ÉacceptTask
+DELME: TaskData is OK
+DELME: CmdID is OK
+DELME: Check for active is OK
+DELME: Not protected cmd | no protected session | cmd from protected session
+DELME: Start/continue protected session is OK
+DELME: Stop/Continue protected session is OK
+DELME: getTaskDataListMem() is OK
+
+Wait task queue:
+	sesID=0000BC09DF5D, cmdID=500, errCode=0:0
+Execute task queue:
+	sesID=0000BC09DF5D, cmdID=103, errCode=0:0
+	sesID=0000BC09DF5D, cmdID=205, errCode=0:0
+Error task queue:
+DELME: Exit acceptTask() with ret=0
+
+Wait task queue:
+Execute task queue:
+	sesID=0000BC09DF5D, cmdID=103, errCode=0:0
+	sesID=0000BC09DF5D, cmdID=205, errCode=0:0
+	sesID=0000BC09DF5D, cmdID=500, errCode=0:0
+Error task queue:
+Task (ID=103, No=132) execution time 23.450 s
+
+Wait task queue:
+Execute task queue:
+	sesID=0000BC09DF5D, cmdID=205, errCode=0:0
+	sesID=0000BC09DF5D, cmdID=500, errCode=0:0
+Error task queue:
+</bin/owncom| 22>[fge‚
+Á9DF5D
+]]òµñ22>[fgets(aÂrŠr’‚’j
+]]
+<Ç22>[fgets()=Ó
+]]
+</bin/ownSÑÍ¡)=[CMD=CL¯¹Ñ•ÉacceptTask
+DELME: TaskData is OK
+DELME: CmdID is OK
+DELME: Check for active is OK
+DELME: Not protected cmd | no protected session | cmd from protected session
+DELME: Start/continue protected session is OK
+Task (ID=205, No=133) execution time 3.330 s
+
+Wait task queue:
+Execute task queue:
+	sesID=0000BC09DF5D, cmdID=500, errCode=0:0
+Error task queue:
+Task (ID=500, No=134) execution time 2.660 s
+
+Wait task queue:
+Execute task queue:
+Error task queue:
+
