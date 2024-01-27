@@ -10,6 +10,8 @@ The manual from Arcturus describes the memory layout. I have dumped:
 Bootloader flash, OS Flash and dumped the RAM with the unit running.
 Maybe there is a password hiding somewhere?
 
+I threw BruteX https://github.com/1N3/BruteX/tree/master at the telnet-login prompt and it came up with "administrator","password" - Who knew, it was that simple!
+
 There's a Xilinx FPGA doing the heavy work, a Cirrus Logic WM8199 AFE (Analog FrontEnd) and a lot of power circuitry.
 
 I've dumped the user firmware (OS_FLASH) from the module. It's a CRAMFS partition that you can mount with:
