@@ -4,6 +4,7 @@ Not much information is available online for this unit.
 Internally the unit is comprised of a small Linux computer on SD-DIMM format.
 
 I've dumped the user firmware (OS_FLASH) from the module. It's a CRAMFS partition that you can mount with:
+sudo mount -t cramfs -o loop OS_FLASH.bin /your/mountpoint
 
 Serial port pins:
 
