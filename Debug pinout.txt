@@ -1,0 +1,17 @@
+Both ports are standard RS232 levels, not TTL!
+
+9600,8,N,1
+
+J5:
+7	RXD1
+8	RTS1
+5	TXD1
+6	CTS1
+
+J3:
+9	RTS2
+10	TXD2
+11	CTS2
+12	RXD2
+
+Nothing happens on second serial port.

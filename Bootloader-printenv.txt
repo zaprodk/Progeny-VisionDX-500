@@ -1,0 +1,976 @@
+
+uCbootloader 1.7.7r6
+(c) Copyright 2001-2004 Arcturus Networks Inc.
+All Rights Reserved.
+
+CACHE on
+Autoboot in 1 seconds. <esc> to abort...
+Booting
+uncompress... go! 0x20000
+Linux version 2.4.17-an1 (uClinux@lcekov_linux) (gcc version 2.95.3 20010315 (re           lease)(ColdFire patches - 20010318 from http://fiddes.net/coldfire/)(-msep-data            patches)) #3213 Tue Sep 5 13:32:55 CDT 2006
+uC5272 serial string [X4612B071-01a92]
+uCbootstrap eth addr 0 00:11:7e:00:0a:92
+uCbootstrap eth addr 1 00:11:7e:00:0a:93
+
+
+uClinux/COLDFIRE(m5272)
+COLDFIRE port done by Greg Ungerer, gerg@snapgear.com
+Flat model support (C) 1998,1999 Kenneth Albanowski, D. Jeff Dionne
+On node 0 totalpages: 4080
+zone(0): 0 pages.
+zone(1): 4080 pages.
+zone(2): 0 pages.
+Kernel command line:  console=ttyS0
+Calibrating delay loop... 43.72 BogoMIPS
+Memory available: 14804k/16320k RAM, 0k/0k ROM (871k kernel code, 246k data)
+kmem_create: Forcing size word alignment - vm_area_struct
+kmem_create: Forcing size word alignment - mm_struct
+kmem_create: Forcing size word alignment - filp
+Dentry-cache hash table entries: 2048 (order: 2, 16384 bytes)
+Inode-cache hash table entries: 1024 (order: 1, 8192 bytes)
+kmem_create: Forcing size word alignment - inode_cache
+Mount-cache hash table entries: 512 (order: 0, 4096 bytes)
+kmem_create: Forcing size word alignment - bdev_cache
+kmem_create: Forcing size word alignment - cdev_cache
+Buffer-cache hash table entries: 1024 (order: 0, 4096 bytes)
+Page-cache hash table entries: 4096 (order: 2, 16384 bytes)
+POSIX conformance testing by UNIFIX
+Linux NET4.0 for Linux 2.4
+Based upon Swansea University Computer Society NET3.039
+kmem_create: Forcing size word alignment - sock
+Initializing RT netlink socket
+Starting kswapd
+kmem_create: Forcing size word alignment - file lock cache
+kmem_create: Forcing size word alignment - nfs_read_data
+kmem_create: Forcing size word alignment - nfs_write_data
+MPSe Hardware Support (C) 2002-2006, Progeny Inc. (by Lyubomir L. Cekov)
+        Turn on Baseboard: Progeny part #30-08107 ...
+        Turn on Processor: Motorola, Coldfire MCF5272 ...
+        Turn on Sensor support:
+                E2V Technologies, CCD38-20
+                E2V Technologies, CCD78-20
+                E2V Technologies, CCD76-40 ...
+        Turn on AFE support:
+                AFE w/ WM8199 for E2V sensors, part #30-08108, Rev. 3 ...
+        Turn on MPSe and JB-70/Preva integration ...
+
+
+  FPGA Version 2.0, 9/12/2006
+  Firmware Version 2.0, 9/5/2006
+
+
+        Turn off MPSe and JB-70/Preva integration ...
+        Turn off AFE support:
+                AFE w/ WM8199 for E2V sensors, part #30-08108, Rev. 3 ...
+        Turn off Sensor support:
+                E2V Technologies, CCD38-20
+                E2V Technologies, CCD78-20
+                E2V Technologies, CCD76-40 ...
+ColdFire internal UART serial driver version 1.00
+ttyS0 at 0x10000100 (irq = 73) is a builtin ColdFire UART
+ttyS1 at 0x10000140 (irq = 74) is a builtin ColdFire UART
+kmem_create: Forcing size word alignment - blkdev_requests
+block: 64 slots per queue, batch=16
+RAMDISK driver initialized: 16 RAM disks of 4096K size 1024 blocksize
+fec.c: Probe number 0 with 0x0000
+eth0: FEC ENET Version 0.2, 00:11:7e:00:0a:92
+fec: PHY @ 1, ID 0x001378e2 -- LXT972
+Blkmem copyright 1998,1999 D. Jeff Dionne
+Blkmem copyright 1998 Kenneth Albanowski
+Blkmem 2 disk images:
+0: 10C20000-10D6A3FF [VIRTUAL 10C20000-10D6A3FF] (RO) <CRAMFS>
+1: 0-3FF [VIRTUAL 0-3FF] (RO) <NONE>
+loop: loaded (max 8 devices)
+Linux Kernel Card Services 3.1.22
+  options:  none
+cs.c 1.279 2001/10/13 00:08:28 (David Hinds)
+NET4: Linux TCP/IP 1.0 for NET4.0
+IP Protocols: ICMP, UDP, TCP
+kmem_create: Forcing size word alignment - ip_dst_cache
+IP: routing cache hash table of 512 buckets, 4Kbytes
+TCP: Hash tables configured (established 512 bind 512)
+NET4: Unix domain sockets 1.0/SMP for Linux NET4.0.
+ds: no socket drivers loaded!
+VFS: Mounted root (cramfs filesystem) readonly.
+Freeing unused kernel memory: 24k freed (0x116000 - 0x11b000)
+Get resource 1
+size = 547 x 7572
+Get resource 2
+Get resource 3
+CCD Data object Init:
+  Downloading the default Maximum Integration Time...
+  Downloading the default Exposure Threshold...
+  Downloading the default CCD Configuration data ...
+AFE Data object Init:
+  Downloading the default AFE Configuration data ...
+Get resource 4
+Get resource 5
+Get resource 6
+initParams: param[2048]=660
+Get resource 7
+The xrayccd (ver. Tue Sep  5 13:32:46 CDT 2006) has been installed successfully
+
+/etc/network [INF]: Starting the network ...
+/etc/network [INF]: The network has been started!
+eth0: config: auto-negotiation on, 100HDX, 10HDX.
+
+================================================================
+
+                  Welcome to MPSe test console
+
+================================================================
+   For more information, please, visit www.progenydental.com
+================================================================
+
+
+myhost56 login: eth0: config: auto-negotiation on, 100HDX, 10HDX.
+SIOCADDRT: Unknown error 101
+                            SIOCADDRT: Unknown error 17
+                                                       SIOCADDRT: Unknown error            17
+  SIOCADDRT: Unknown error 17
+                             SIOCADDRT: Unknown error 17
+                                                        SIOCADDRT: Unknown error            17
+   SIOCADDRT: Unknown error 17
+                              SIOCADDRT: Unknown error 17
+                                                         SIOCADDRT: Unknown erro           r 17
+    SIOCADDRT: Unknown error 17
+                               SIOCADDRT: Unknown error 17
+                                                          SIOCADDRT: Unknown err           or 17
+     1640x1262SIOCADDRT: Unknown error 17
+                                         SIOCADDRT: Unknown error 17
+                                                                    SIOCADDRT: U           nknown error 17
+               SIOCADDRT: Unknown error 17
+                                          SIOCADDRT: Unknown error 17
+                                                                     SIOCADDRT:            Unknown error 17
+                SIOCADDRT: Unknown error 17
+                                           SIOCADDRT: Unknown error 17
+                                                                      SIOCADDRT:            Unknown error 17
+                 SIOCADDRT: Unknown error 17
+                                            SIOCADDRT: Unknown error 17
+                                                                       SIOCADDRT           : Unknown error 17
+                  SIOCADDRT: Unknown error 17
+                                             SIOCADDRT: Unknown error 17
+                                                                        SIOCADDR           T: Unknown error 17
+                   SIOCADDRT: Unknown error 17
+                                              SIOCADDRT: Unknown error 17
+                                                                         SIOCADD           RT: Unknown error 17
+                    SIOCADDRT: Unknown error 17
+                                               SIOCADDRT: Unknown error 17
+                                                                          SIOCAD           DRT: Unknown error 17
+                     SIOCADDRT: Unknown error 17
+                                                SIOCADDRT: Unknown error 17
+                                                                           SIOCA           DDRT: Unknown error 17
+                      SIOCADDRT: Unknown error 17
+                                                 SIOCADDRT: Unknown error 17
+                                                                            SIOC           ADDRT: Unknown error 17
+                       SIOCADDRT: Unknown error 17
+                                                  SIOCADDRT: Unknown error 17
+                                                                             SIO           CADDRT: Unknown error 17
+                        SIOCADDRT: Unknown error 17
+                                                   SIOCADDRT: Unknown error 17
+
+uCbootloader 1.7.7r6
+(c) Copyright 2001-2004 Arcturus Networks Inc.
+All Rights Reserved.
+
+CACHE on
+Autoboot in 1 seconds. <esc> to abort...
+Booting
+uncompress... go! 0x20000
+Linux version 2.4.17-an1 (uClinux@lcekov_linux) (gcc version 2.95.3 20010315 (re           lease)(ColdFire patches - 20010318 from http://fiddes.net/coldfire/)(-msep-data            patches)) #3213 Tue Sep 5 13:32:55 CDT 2006
+uC5272 serial string [X4612B071-01a92]
+uCbootstrap eth addr 0 00:11:7e:00:0a:92
+uCbootstrap eth addr 1 00:11:7e:00:0a:93
+
+
+uClinux/COLDFIRE(m5272)
+COLDFIRE port done by Greg Ungerer, gerg@snapgear.com
+Flat model support (C) 1998,1999 Kenneth Albanowski, D. Jeff Dionne
+On node 0 totalpages: 4080
+zone(0): 0 pages.
+zone(1): 4080 pages.
+zone(2): 0 pages.
+Kernel command line:  console=ttyS0
+Calibrating delay loop... 43.72 BogoMIPS
+Memory available: 14804k/16320k RAM, 0k/0k ROM (871k kernel code, 246k data)
+kmem_create: Forcing size word alignment - vm_area_struct
+kmem_create: Forcing size word alignment - mm_struct
+kmem_create: Forcing size word alignment - filp
+Dentry-cache hash table entries: 2048 (order: 2, 16384 bytes)
+Inode-cache hash table entries: 1024 (order: 1, 8192 bytes)
+kmem_create: Forcing size word alignment - inode_cache
+Mount-cache hash table entries: 512 (order: 0, 4096 bytes)
+kmem_create: Forcing size word alignment - bdev_cache
+kmem_create: Forcing size word alignment - cdev_cache
+Buffer-cache hash table entries: 1024 (order: 0, 4096 bytes)
+Page-cache hash table entries: 4096 (order: 2, 16384 bytes)
+POSIX conformance testing by UNIFIX
+Linux NET4.0 for Linux 2.4
+Based upon Swansea University Computer Society NET3.039
+kmem_create: Forcing size word alignment - sock
+Initializing RT netlink socket
+Starting kswapd
+kmem_create: Forcing size word alignment - file lock cache
+kmem_create: Forcing size word alignment - nfs_read_data
+kmem_create: Forcing size word alignment - nfs_write_data
+MPSe Hardware Support (C) 2002-2006, Progeny Inc. (by Lyubomir L. Cekov)
+        Turn on Baseboard: Progeny part #30-08107 ...
+        Turn on Processor: Motorola, Coldfire MCF5272 ...
+        Turn on Sensor support:
+                E2V Technologies, CCD38-20
+                E2V Technologies, CCD78-20
+                E2V Technologies, CCD76-40 ...
+        Turn on AFE support:
+                AFE w/ WM8199 for E2V sensors, part #30-08108, Rev. 3 ...
+        Turn on MPSe and JB-70/Preva integration ...
+
+
+  FPGA Version 2.0, 9/12/2006
+  Firmware Version 2.0, 9/5/2006
+
+
+        Turn off MPSe and JB-70/Preva integration ...
+        Turn off AFE support:
+                AFE w/ WM8199 for E2V sensors, part #30-08108, Rev. 3 ...
+        Turn off Sensor support:
+                E2V Technologies, CCD38-20
+                E2V Technologies, CCD78-20
+                E2V Technologies, CCD76-40 ...
+ColdFire internal UART serial driver version 1.00
+ttyS0 at 0x10000100 (irq = 73) is a builtin ColdFire UART
+ttyS1 at 0x10000140 (irq = 74) is a builtin ColdFire UART
+kmem_create: Forcing size word alignment - blkdev_requests
+block: 64 slots per queue, batch=16
+RAMDISK driver initialized: 16 RAM disks of 4096K size 1024 blocksize
+fec.c: Probe number 0 with 0x0000
+eth0: FEC ENET Version 0.2, 00:11:7e:00:0a:92
+fec: PHY @ 1, ID 0x001378e2 -- LXT972
+Blkmem copyright 1998,1999 D. Jeff Dionne
+Blkmem copyright 1998 Kenneth Albanowski
+Blkmem 2 disk images:
+0: 10C20000-10D6A3FF [VIRTUAL 10C20000-10D6A3FF] (RO) <CRAMFS>
+1: 0-3FF [VIRTUAL 0-3FF] (RO) <NONE>
+loop: loaded (max 8 devices)
+Linux Kernel Card Services 3.1.22
+  options:  none
+cs.c 1.279 2001/10/13 00:08:28 (David Hinds)
+NET4: Linux TCP/IP 1.0 for NET4.0
+IP Protocols: ICMP, UDP, TCP
+kmem_create: Forcing size word alignment - ip_dst_cache
+IP: routing cache hash table of 512 buckets, 4Kbytes
+TCP: Hash tables configured (established 512 bind 512)
+NET4: Unix domain sockets 1.0/SMP for Linux NET4.0.
+ds: no socket drivers loaded!
+VFS: Mounted root (cramfs filesystem) readonly.
+Freeing unused kernel memory: 24k freed (0x116000 - 0x11b000)
+Get resource 1
+size = 547 x 7572
+Get resource 2
+Get resource 3
+CCD Data object Init:
+  Downloading the default Maximum Integration Time...
+  Downloading the default Exposure Threshold...
+  Downloading the default CCD Configuration data ...
+AFE Data object Init:
+  Downloading the default AFE Configuration data ...
+Get resource 4
+Get resource 5
+Get resource 6
+initParams: param[2048]=660
+Get resource 7
+The xrayccd (ver. Tue Sep  5 13:32:46 CDT 2006) has been installed successfully
+
+/etc/network [INF]: Starting the network ...
+/etc/network [INF]: The network has been started!
+eth0: config: auto-negotiation on, 100HDX, 10HDX.
+
+================================================================
+
+                  Welcome to MPSe test console
+
+================================================================
+   For more information, please, visit www.progenydental.com
+================================================================
+
+
+myhost56 login: eth0: config: auto-negotiation on, 100HDX, 10HDX.
+SIOCADDRT: Unknown error 101
+                            SIOCADDRT: Unknown error 17
+                                                       SIOCADDRT: Unknown error            17
+  SIOCADDRT: Unknown error 17
+                             SIOCADDRT: Unknown error 17
+                                                        SIOCADDRT: Unknown error            17
+   SIOCADDRT: Unknown error 17
+
+uCbootloader 1.7.7r6
+(c) Copyright 2001-2004 Arcturus Networks Inc.
+All Rights Reserved.
+
+CACHE on
+Autoboot in 1 seconds. <esc> to abort...
+Booting
+uncompress... go! 0x20000
+Linux version 2.4.17-an1 (uClinux@lcekov_linux) (gcc version 2.95.3 20010315 (re           lease)(ColdFire patches - 20010318 from http://fiddes.net/coldfire/)(-msep-data            patches)) #3213 Tue Sep 5 13:32:55 CDT 2006
+uC5272 serial string [X4612B071-01a92]
+uCbootstrap eth addr 0 00:11:7e:00:0a:92
+uCbootstrap eth addr 1 00:11:7e:00:0a:93
+
+
+uClinux/COLDFIRE(m5272)
+COLDFIRE port done by Greg Ungerer, gerg@snapgear.com
+Flat model support (C) 1998,1999 Kenneth Albanowski, D. Jeff Dionne
+On node 0 totalpages: 4080
+zone(0): 0 pages.
+zone(1): 4080 pages.
+zone(2): 0 pages.
+Kernel command line:  console=ttyS0
+Calibrating delay loop... 43.72 BogoMIPS
+Memory available: 14804k/16320k RAM, 0k/0k ROM (871k kernel code, 246k data)
+kmem_create: Forcing size word alignment - vm_area_struct
+kmem_create: Forcing size word alignment - mm_struct
+kmem_create: Forcing size word alignment - filp
+Dentry-cache hash table entries: 2048 (order: 2, 16384 bytes)
+Inode-cache hash table entries: 1024 (order: 1, 8192 bytes)
+kmem_create: Forcing size word alignment - inode_cache
+Mount-cache hash table entries: 512 (order: 0, 4096 bytes)
+kmem_create: Forcing size word alignment - bdev_cache
+kmem_create: Forcing size word alignment - cdev_cache
+Buffer-cache hash table entries: 1024 (order: 0, 4096 bytes)
+Page-cache hash table entries: 4096 (order: 2, 16384 bytes)
+POSIX conformance testing by UNIFIX
+Linux NET4.0 for Linux 2.4
+Based upon Swansea University Computer Society NET3.039
+kmem_create: Forcing size word alignment - sock
+Initializing RT netlink socket
+Starting kswapd
+kmem_create: Forcing size word alignment - file lock cache
+kmem_create: Forcing size word alignment - nfs_read_data
+kmem_create: Forcing size word alignment - nfs_write_data
+MPSe Hardware Support (C) 2002-2006, Progeny Inc. (by Lyubomir L. Cekov)
+        Turn on Baseboard: Progeny part #30-08107 ...
+        Turn on Processor: Motorola, Coldfire MCF5272 ...
+        Turn on Sensor support:
+                E2V Technologies, CCD38-20
+                E2V Technologies, CCD78-20
+                E2V Technologies, CCD76-40 ...
+        Turn on AFE support:
+                AFE w/ WM8199 for E2V sensors, part #30-08108, Rev. 3 ...
+        Turn on MPSe and JB-70/Preva integration ...
+
+
+  FPGA Version 2.0, 9/12/2006
+  Firmware Version 2.0, 9/5/2006
+
+
+        Turn off MPSe and JB-70/Preva integration ...
+        Turn off AFE support:
+                AFE w/ WM8199 for E2V sensors, part #30-08108, Rev. 3 ...
+        Turn off Sensor support:
+                E2V Technologies, CCD38-20
+                E2V Technologies, CCD78-20
+                E2V Technologies, CCD76-40 ...
+ColdFire internal UART serial driver version 1.00
+ttyS0 at 0x10000100 (irq = 73) is a builtin ColdFire UART
+ttyS1 at 0x10000140 (irq = 74) is a builtin ColdFire UART
+kmem_create: Forcing size word alignment - blkdev_requests
+block: 64 slots per queue, batch=16
+RAMDISK driver initialized: 16 RAM disks of 4096K size 1024 blocksize
+fec.c: Probe number 0 with 0x0000
+eth0: FEC ENET Version 0.2, 00:11:7e:00:0a:92
+fec: PHY @ 1, ID 0x001378e2 -- LXT972
+Blkmem copyright 1998,1999 D. Jeff Dionne
+Blkmem copyright 1998 Kenneth Albanowski
+Blkmem 2 disk images:
+0: 10C20000-10D6A3FF [VIRTUAL 10C20000-10D6A3FF] (RO) <CRAMFS>
+1: 0-3FF [VIRTUAL 0-3FF] (RO) <NONE>
+loop: loaded (max 8 devices)
+Linux Kernel Card Services 3.1.22
+  options:  none
+cs.c 1.279 2001/10/13 00:08:28 (David Hinds)
+NET4: Linux TCP/IP 1.0 for NET4.0
+IP Protocols: ICMP, UDP, TCP
+kmem_create: Forcing size word alignment - ip_dst_cache
+IP: routing cache hash table of 512 buckets, 4Kbytes
+TCP: Hash tables configured (established 512 bind 512)
+NET4: Unix domain sockets 1.0/SMP for Linux NET4.0.
+ds: no socket drivers loaded!
+VFS: Mounted root (cramfs filesystem) readonly.
+Freeing unused kernel memory: 24k freed (0x116000 - 0x11b000)
+Get resource 1
+size = 547 x 7572
+Get resource 2
+Get resource 3
+CCD Data object Init:
+  Downloading the default Maximum Integration Time...
+  Downloading the default Exposure Threshold...
+  Downloading the default CCD Configuration data ...
+AFE Data object Init:
+  Downloading the default AFE Configuration data ...
+Get resource 4
+Get resource 5
+Get resource 6
+initParams: param[2048]=660
+Get resource 7
+The xrayccd (ver. Tue Sep  5 13:32:46 CDT 2006) has been installed successfully
+
+/etc/network [INF]: Starting the network ...
+/etc/network [INF]: The network has been started!
+eth0: config: auto-negotiation on, 100HDX, 10HDX.
+
+================================================================
+
+                  Welcome to MPSe test console
+
+================================================================
+   For more information, please, visit www.progenydental.com
+================================================================
+
+
+myhost56 login:
+================================================================
+
+                  Welcome to MPSe test console
+
+================================================================
+   For more information, please, visit www.progenydental.com
+================================================================
+
+
+myhost56 login: eth0: config: auto-negotiation on, 100HDX, 10HDX.
+
+================================================================
+
+                  Welcome to MPSe test console
+
+================================================================
+   For more information, please, visit www.progenydental.com
+================================================================
+
+
+myhost56 login:
+================================================================
+
+                  Welcome to MPSe test console
+
+================================================================
+   For more information, please, visit www.progenydental.com
+================================================================
+
+
+SIOCADDRT: Unknown error 101
+myhost56 login:
+================================================================
+
+                  Welcome to MPSe test console
+
+================================================================
+   For more information, please, visit www.progenydental.com
+================================================================
+
+
+myhost56 login: rootSIOCADDRT: Unknown error 17
+
+Password:
+SIOCADDRT: Unknown error 17
+
+================================================================
+
+                  Welcome to MPSe test console
+
+================================================================
+   For more information, please, visit www.progenydental.com
+================================================================
+
+
+myhost56 login: SIOCADDRT: Unknown error 17
+                                           progSIOCADDRT: Unknown error 17
+                                                                          eny
+Password: SIOCADDRT: Unknown error 17
+
+SIOCADDRT: Unknown error 17
+
+================================================================
+
+                  Welcome to MPSe test console
+
+================================================================
+   For more information, please, visit www.progenydental.com
+================================================================
+
+
+myhost56 login: SIOCADDRT: Unknown error 17
+
+uCbootloader 1.7.7r6
+(c) Copyright 2001-2004 Arcturus Networks Inc.
+All Rights Reserved.
+
+CACHE on
+Autoboot in 1 seconds. <esc> to abort...
+Booting
+uncompress...
+uCbootloader 1.7.7r6
+(c) Copyright 2001-2004 Arcturus Networks Inc.
+All Rights Reserved.
+
+CACHE on
+Autoboot in 1 seconds. <esc> to abort...
+Booting
+uncompress... go! 0x20000
+Linux version 2.4.17-an1 (uClinux@lcekov_linux) (gcc version 2.95.3 20010315 (re           lease)(ColdFire patches - 20010318 from http://fiddes.net/coldfire/)(-msep-data            patches)) #3213 Tue Sep 5 13:32:55 CDT 2006
+uC5272 serial string [X4612B071-01a92]
+uCbootstrap eth addr 0 00:11:7e:00:0a:92
+uCbootstrap eth addr 1 00:11:7e:00:0a:93
+
+
+uClinux/COLDFIRE(m5272)
+COLDFIRE port done by Greg Ungerer, gerg@snapgear.com
+Flat model support (C) 1998,1999 Kenneth Albanowski, D. Jeff Dionne
+On node 0 totalpages: 4080
+zone(0): 0 pages.
+zone(1): 4080 pages.
+zone(2): 0 pages.
+Kernel command line:  console=ttyS0
+Calibrating delay loop... 43.72 BogoMIPS
+Memory available: 14804k/16320k RAM, 0k/0k ROM (871k kernel code, 246k data)
+kmem_create: Forcing size word alignment - vm_area_struct
+kmem_create: Forcing size word alignment - mm_struct
+kmem_create: Forcing size word alignment - filp
+Dentry-cache hash table entries: 2048 (order: 2, 16384 bytes)
+Inode-cache hash table entries: 1024 (order: 1, 8192 bytes)
+kmem_create: Forcing size word alignment - inode_cache
+Mount-cache hash table entries: 512 (order: 0, 4096 bytes)
+kmem_create: Forcing size word alignment - bdev_cache
+kmem_create: Forcing size word alignment - cdev_cache
+Buffer-cache hash table entries: 1024 (order: 0, 4096 bytes)
+Page-cache hash table entries: 4096 (order: 2, 16384 bytes)
+POSIX conformance testing by UNIFIX
+Linux NET4.0 for Linux 2.4
+Based upon Swansea University Computer Society NET3.039
+kmem_create: Forcing size word alignment - sock
+Initializing RT netlink socket
+Starting kswapd
+kmem_create: Forcing size word alignment - file lock cache
+kmem_create: Forcing size word alignment - nfs_read_data
+kmem_create: Forcing size word alignment - nfs_write_data
+MPSe Hardware Support (C) 2002-2006, Progeny Inc. (by Lyubomir L. Cekov)
+        Turn on Baseboard: Progeny part #30-08107 ...
+        Turn on Processor: Motorola, Coldfire MCF5272 ...
+        Turn on Sensor support:
+                E2V Technologies, CCD38-20
+                E2V Technologies, CCD78-20
+                E2V Technologies, CCD76-40 ...
+
+uCbootloader 1.7.7r6
+(c) Copyright 2001-2004 Arcturus Networks Inc.
+All Rights Reserved.
+
+CACHE on
+Autoboot in 1 seconds. <esc> to abort...
+Booting
+uncompress... go! 0x20000
+Linux version 2.4.17-an1 (uClinux@lcekov_linux) (gcc version 2.95.3 20010315 (re           lease)(ColdFire patches - 20010318 from http://fiddes.net/coldfire/)(-msep-data            patches)) #3213 Tue Sep 5 13:32:55 CDT 2006
+uC5272 serial string [X4612B071-01a92]
+uCbootstrap eth addr 0 00:11:7e:00:0a:92
+uCbootstrap eth addr 1 00:11:7e:00:0a:93
+
+
+uClinux/COLDFIRE(m5272)
+COLDFIRE port done by Greg Ungerer, gerg@snapgear.com
+Flat model support (C) 1998,1999 Kenneth Albanowski, D. Jeff Dionne
+On node 0 totalpages: 4080
+zone(0): 0 pages.
+zone(1): 4080 pages.
+zone(2): 0 pages.
+Kernel command line:  console=ttyS0
+Calibrating delay loop... 43.72 BogoMIPS
+Memory available: 14804k/16320k RAM, 0k/0k ROM (871k kernel code, 246k data)
+kmem_create: Forcing size word alignment - vm_area_struct
+kmem_create: Forcing size word alignment - mm_struct
+kmem_create: Forcing size word alignment - filp
+Dentry-cache hash table entries: 2048 (order: 2, 16384 bytes)
+Inode-cache hash table entries: 1024 (order: 1, 8192 bytes)
+kmem_create: Forcing size word alignment - inode_cache
+Mount-cache hash table entries: 512 (order: 0, 4096 bytes)
+kmem_create: Forcing size word alignment - bdev_cache
+kmem_create: Forcing size word alignment - cdev_cache
+Buffer-cache hash table entries: 1024 (order: 0, 4096 bytes)
+Page-cache hash table entries: 4096 (order: 2, 16384 bytes)
+POSIX conformance testing by UNIFIX
+Linux NET4.0 for Linux 2.4
+Based upon Swansea University Computer Society NET3.039
+kmem_create: Forcing size word alignment - sock
+Initializing RT netlink socket
+Starting kswapd
+kmem_create: Forcing size word alignment - file lock cache
+kmem_create: Forcing size word alignment - nfs_read_data
+kmem_create: Forcing size word alignment - nfs_write_data
+MPSe Hardware Support (C) 2002-2006, Progeny Inc. (by Lyubomir L. Cekov)
+        Turn on Baseboard: Progeny part #30-08107 ...
+        Turn on Processor: Motorola, Coldfire MCF5272 ...
+        Turn on Sensor support:
+                E2V Technologies, CCD38-20
+                E2V Technologies, CCD78-20
+                E2V Technologies, CCD76-40 ...
+        Turn on AFE support:
+                AFE w/ WM8199 for E2V sensors, part #30-08108, Rev. 3 ...
+        Turn on MPSe and JB-70/Preva integration ...
+
+
+  FPGA Version 2.0, 9/12/2006
+  Firmware Version 2.0, 9/5/2006
+
+
+        Turn off MPSe and JB-70/Preva integration ...
+        Turn off AFE support:
+                AFE w/ WM8199 for E2V sensors, part #30-08108, Rev. 3 ...
+        Turn off Sensor support:
+                E2V Technologies, CCD38-20
+                E2V Technolog
+uCbootloader 1.7.7r6
+(c) Copyright 2001-2004 Arcturus Networks Inc.
+All Rights Reserved.
+
+CACHE on
+Autoboot in 1 seconds. <esc> to abort...
+BOOT FLASH type 2256 AM29DL322DB @0x10c00000
+DP|002000 DP|004000 DP|006000 DP|008000 DP|00a000 DP|00c000
+DP|00e000 DP|010000 DP|020000 D-|030000 D-|040000 D-|050000
+D-|060000 D-|070000 D-|080000 D-|090000 D-|0a0000 D-|0b0000
+D-|0c0000 D-|0d0000 D-|0e0000 D-|0f0000 D-|100000 D-|110000
+D-|120000 D-|130000 D-|140000 D-|150000 D-|160000 D-|170000
+D-|180000 D-|190000 D-|1a0000 D-|1b0000 D-|1c0000 D-|1d0000
+D-|1e0000 D-|1f0000 D-|200000 D-|210000 D-|220000 D-|230000
+D-|240000 D-|250000 D-|260000 D-|270000 D-|280000 D-|290000
+D-|2a0000 D-|2b0000 D-|2c0000 D-|2d0000 D-|2e0000 D-|2f0000
+...
+D-|400000
+
+B$
+uCbootloader 1.7.7r6
+(c) Copyright 2001-2004 Arcturus Networks Inc.
+All Rights Reserved.
+
+CACHE on
+Autoboot in 1 seconds. <esc> to abort...
+Booting
+uncompress... go! 0x20000
+Linux version 2.4.17-an1 (uClinux@lcekov_linux) (gcc version 2.95.3 20010315 (re           lease)(ColdFire patches - 20010318 from http://fiddes.net/coldfire/)(-msep-data            patches)) #3213 Tue Sep 5 13:32:55 CDT 2006
+uC5272 serial string [X4612B071-01a92]
+uCbootstrap eth addr 0 00:11:7e:00:0a:92
+uCbootstrap eth addr 1 00:11:7e:00:0a:93
+
+
+uClinux/COLDFIRE(m5272)
+COLDFIRE port done by Greg Ungerer, gerg@snapgear.com
+Flat model support (C) 1998,1999 Kenneth Albanowski, D. Jeff Dionne
+On node 0 totalpages: 4080
+zone(0): 0 pages.
+zone(1): 4080 pages.
+zone(2): 0 pages.
+Kernel command line:  console=ttyS0
+Calibrating delay loop... 43.72 BogoMIPS
+Memory available: 14804k/16320k RAM, 0k/0k ROM (871k kernel code, 246k data)
+kmem_create: Forcing size word alignment - vm_area_struct
+kmem_create: Forcing size word alignment - mm_struct
+kmem_create: Forcing size word alignment - filp
+Dentry-cache hash table entries: 2048 (order: 2, 16384 bytes)
+Inode-cache hash table entries: 1024 (order: 1, 8192 bytes)
+kmem_create: Forcing size word alignment - inode_cache
+Mount-cache hash table entries: 512 (order: 0, 4096 bytes)
+kmem_create: Forcing size word alignment - bdev_cache
+kmem_create: Forcing size word alignment - cdev_cache
+Buffer-cache hash table entries: 1024 (order: 0, 4096 bytes)
+Page-cache hash table entries: 4096 (order: 2, 16384 bytes)
+POSIX conformance testing by UNIFIX
+Linux NET4.0 for Linux 2.4
+Based upon Swansea University Computer Society NET3.039
+kmem_create: Forcing size word alignment - sock
+Initializing RT netlink socket
+Starting kswapd
+kmem_create: Forcing size word alignment - file lock cache
+kmem_create: Forcing size word alignment - nfs_read_data
+kmem_create: Forcing size word alignment - nfs_write_data
+MPSe Hardware Support (C) 2002-2006, Progeny Inc. (by Lyubomir L. Cekov)
+        Turn on Baseboard: Progeny part #30-08107 ...
+        Turn on Processor: Motorola, Coldfire MCF5272 ...
+        Turn on Sensor support:
+                E2V Technologies, CCD38-20
+                E2V Technologies, CCD78-20
+                E2V Technologies, CCD76-40 ...
+        Turn on AFE support:
+                AFE w/ WM8199 for E2V sensors, part #30-08108, Rev. 3 ...
+        Turn on MPSe and JB-70/Preva integration ...
+
+
+  FPGA Version 2.0, 9/12/2006
+  Firmware Version 2.0, 9/5/2006
+
+
+        Turn off MPSe and JB-70/Preva integration ...
+        Turn off AFE support:
+                AFE w/ WM8199 for E2V sensors, part #30-08108, Rev. 3 ...
+        Turn off Sensor support:
+                E2V Technologies, CCD38-20
+                E2V Technologies, CCD78-20
+                E2V Technologies, CCD76-40 ...
+ColdFire internal UART serial driver version 1.00
+ttyS0 at 0x10000100 (irq = 73) is a builtin ColdFire UART
+ttyS1 at 0x10000140 (irq = 74) is a builtin ColdFire UART
+kmem_create: Forcing size word alignment - blkdev_requests
+block: 64 slots per queue, batch=16
+RAMDISK driver initialized: 16 RAM disks of 4096K size 1024 blocksize
+fec.c: Probe number 0 with 0x0000
+eth0: FEC ENET Version 0.2, 00:11:7e:00:0a:92
+fec: PHY @ 1, ID 0x001378e2 -- LXT972
+Blkmem copyright 1998,1999 D. Jeff Dionne
+Blkmem copyright 1998 Kenneth Albanowski
+Blkmem 2 disk images:
+0: 10C20000-10D6A3FF [VIRTUAL 10C20000-10D6A3FF] (RO) <CRAMFS>
+1: 0-3FF [VIRTUAL 0-3FF] (RO) <NONE>
+loop: loaded (max 8 devices)
+Linux Kernel Card Services 3.1.22
+  options:  none
+cs.c 1.279 2001/10/13 00:08:28 (David Hinds)
+NET4: Linux TCP/IP 1.0 for NET4.0
+IP Protocols: ICMP, UDP, TCP
+kmem_create: Forcing size word alignment - ip_dst_cache
+IP: routing cache hash table of 512 buckets, 4Kbytes
+TCP: Hash tables configured (established 512 bind 512)
+NET4: Unix domain sockets 1.0/SMP for Linux NET4.0.
+ds: no socket drivers loaded!
+VFS: Mounted root (cramfs filesystem) readonly.
+Freeing unused kernel memory: 24k freed (0x116000 - 0x11b000)
+Get resource 1
+size = 547 x 7572
+Get resource 2
+Get resource 3
+CCD Data object Init:
+  Downloading the default Maximum Integration Time...
+  Downloading the default Exposure Threshold...
+  Downloading the default CCD Configuration data ...
+AFE Data object Init:
+  Downloading the default AFE Configuration data ...
+Get resource 4
+Get resource 5
+Get resource 6
+initParams: param[2048]=660
+Get resource 7
+The xrayccd (ver. Tue Sep  5 13:32:46 CDT 2006) has been installed successfully
+
+/etc/network [INF]: Starting the network ...
+/etc/network [INF]: The network has been started!
+eth0: config: auto-negotiation on, 100HDX, 10HDX.
+
+================================================================
+
+                  Welcome to MPSe test console
+
+================================================================
+   For more information, please, visit www.progenydental.com
+================================================================
+
+
+myhost56 login: root
+Password: eth0: config: auto-negotiation on, 100HDX, 10HDX.
+SIOCADDRT: Unknown error 101
+
+SIOCADDRT: Unknown error 17
+
+================================================================
+
+                  Welcome to MPSe test console
+
+================================================================
+   For more information, please, visit www.progenydental.com
+================================================================
+
+
+myhost56 login: progenySIOCADDRT: Unknown error 17
+
+Password: SIOCADDRT: Unknown error 17
+
+SIOCADDRT: Unknown error 17
+
+================================================================
+
+                  Welcome to MPSe test console
+
+================================================================
+   For more information, please, visit www.progenydental.com
+================================================================
+
+
+myhost56 login: SIOCADDRT: Unknown error 17
+                                           rooSIOCADDRT: Unknown error 17
+                                                                         t
+Password:
+SIOCADDRT: Unknown error 17
+
+================================================================
+
+                  Welcome to MPSe test console
+
+================================================================
+   For more information, please, visit www.progenydental.com
+================================================================
+
+
+myhost56 login: SIOCADDRT: Unknown error 17
+                                           SIOCADDRT: Unknown error 17
+                                                                      SIOCADDRT:            Unknown error 17
+                 SIOCADDRT: Unknown error 17
+                                            SIOCADDRT: Unknown error 17
+                                                                       SIOCADDRT           : Unknown error 17
+                  SIOCADDRT: Unknown error 17
+                                             SIOCADDRT: Unknown error 17
+
+uCbootloader 1.7.7r6
+(c) Copyright 2001-2004 Arcturus Networks Inc.
+All Rights Reserved.
+
+CACHE on
+Autoboot in 1 seconds. <esc> to abort...
+BOOT FLASH type 2256 AM29DL322DB @0x10c00000
+DP|002000 DP|004000 DP|006000 DP|008000 DP|00a000 DP|00c000
+DP|00e000 DP|010000 DP|020000 D-|030000 D-|040000 D-|050000
+D-|060000 D-|070000 D-|080000 D-|090000 D-|0a0000 D-|0b0000
+D-|0c0000 D-|0d0000 D-|0e0000 D-|0f0000 D-|100000 D-|110000
+D-|120000 D-|130000 D-|140000 D-|150000 D-|160000 D-|170000
+D-|180000 D-|190000 D-|1a0000 D-|1b0000 D-|1c0000 D-|1d0000
+D-|1e0000 D-|1f0000 D-|200000 D-|210000 D-|220000 D-|230000
+D-|240000 D-|250000 D-|260000 D-|270000 D-|280000 D-|290000
+D-|2a0000 D-|2b0000 D-|2c0000 D-|2d0000 D-|2e0000 D-|2f0000
+...
+D-|400000
+
+B$ help
+uCbootloader 1.7.7r6
+
+uCdimm-MCF5272 Rev 1.3 - 4MB Flash, 16MB RAM (c) Copyright 2001-2004 Arcturus Ne           tworks Inc.
+                                             (c) Copyright 1999-2000 Rt-Control            Inc.
+                                            All Rights Reserved.
+cat:      display a file's contents from a cramfs
+envmm:    memory modify from environment variables
+eraseenv: erase all environment variables
+exit:     exit from the current shell
+fast:     change to FAST
+free:     display the amount of environment variable space remaining
+go:       execute the OS image
+goram:    execute an image in ram
+help:     display this command list
+ls:       list files in a cramfs
+pmask:    set the protection mask
+md:       memory display
+mm:       memory modify
+printenv: display the contents of environment variables
+program:  erase OS, then burn OS from RAM buffer
+reset:    reset the board
+rx:       receive XMODEM into the RAM buffer
+setenv:   set or replace an environment variable
+sh:       invoke a new shell
+slow:     change to SLOW
+speed:    change to <baud>
+verify:   compare OS FLASH image to the RAM buffer
+B$ ls
+drwx                      1800 /bin
+drwx                      1204 /dev
+drwx                       504 /etc
+drwx                        20 /home
+drwx                        20 /lib
+-rwx                   1034612 /linux.bin
+drwx                         0 /mnt
+drwx                         0 /proc
+drwx                       208 /sbin
+-rwx                         8 /tmp
+drwx                         0 /usr
+drwx                        16 /var
+B$ printenv
+FACTORY=Arcturus Networks Inc.
+REVISION=uCdimm-MCF5272 Rev 1.3 - 4MB Flash, 16MB RAM
+SERIAL=X4612B071-01a92
+CONSOLE=ttyS0
+KERNEL=0:linux.bin
+KERNEL_ARGS=root=/dev/rom0
+HWADDR0=00:11:7e:00:0a:92
+HWADDR1=00:11:7e:00:0a:93
+RAMIMAGE=yes
+CACHE=on
+AUTOBOOT=1
+HOST_IP=192.168.68.57
+NET_MASK=255.255.255.0
+HOST_ID=myhost56
+PARAM2048=660
+GATEWAY=192.168.68.0
+B$ $
+$: command not found
+B$
+
+uCbootloader 1.7.7r6
+(c) Copyright 2001-2004 Arcturus Networks Inc.
+All Rights Reserved.
+
+CACHE on
+Autoboot in 1 seconds. <esc> to abort...
+BOOT FLASH type 2256 AM29DL322DB @0x10c00000
+DP|002000 DP|004000 DP|006000 DP|008000 DP|00a000 DP|00c000
+DP|00e000 DP|010000 DP|020000 D-|030000 D-|040000 D-|050000
+D-|060000 D-|070000 D-|080000 D-|090000 D-|0a0000 D-|0b0000
+D-|0c0000 D-|0d0000 D-|0e0000 D-|0f0000 D-|100000 D-|110000
+D-|120000 D-|130000 D-|140000 D-|150000 D-|160000 D-|170000
+D-|180000 D-|190000 D-|1a0000 D-|1b0000 D-|1c0000 D-|1d0000
+D-|1e0000 D-|1f0000 D-|200000 D-|210000 D-|220000 D-|230000
+D-|240000 D-|250000 D-|260000 D-|270000 D-|280000 D-|290000
+D-|2a0000 D-|2b0000 D-|2c0000 D-|2d0000 D-|2e0000 D-|2f0000
+...
+D-|400000
+
+B$ help
+uCbootloader 1.7.7r6
+
+uCdimm-MCF5272 Rev 1.3 - 4MB Flash, 16MB RAM (c) Copyright 2001-2004 Arcturus Networks Inc.
+                                             (c) Copyright 1999-2000 Rt-Control Inc.
+                                            All Rights Reserved.
+cat:      display a file's contents from a cramfs
+envmm:    memory modify from environment variables
+eraseenv: erase all environment variables
+exit:     exit from the current shell
+fast:     change to FAST
+free:     display the amount of environment variable space remaining
+go:       execute the OS image
+goram:    execute an image in ram
+help:     display this command list
+ls:       list files in a cramfs
+pmask:    set the protection mask
+md:       memory display
+mm:       memory modify
+printenv: display the contents of environment variables
+program:  erase OS, then burn OS from RAM buffer
+reset:    reset the board
+rx:       receive XMODEM into the RAM buffer
+setenv:   set or replace an environment variable
+sh:       invoke a new shell
+slow:     change to SLOW
+speed:    change to <baud>
+verify:   compare OS FLASH image to the RAM buffer
+B$ printenv
+FACTORY=Arcturus Networks Inc.
+REVISION=uCdimm-MCF5272 Rev 1.3 - 4MB Flash, 16MB RAM
+SERIAL=X4612B071-01a92
+CONSOLE=ttyS0
+KERNEL=0:linux.bin
+KERNEL_ARGS=root=/dev/rom0
+HWADDR0=00:11:7e:00:0a:92
+HWADDR1=00:11:7e:00:0a:93
+RAMIMAGE=yes
+CACHE=on
+AUTOBOOT=1
+HOST_IP=192.168.68.57
+NET_MASK=255.255.255.0
+HOST_ID=myhost56
+PARAM2048=660
+GATEWAY=192.168.68.0
+B$
+
+New IP set with:
+setenv HOST_IP 192.168.1.11
+
