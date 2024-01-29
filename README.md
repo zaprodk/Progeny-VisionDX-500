@@ -7,7 +7,7 @@ Internally the unit is comprised of a small Linux-computer in a 144-pin SD-DIMM 
 It's running Linux with a 2.4.17 Kernel.
 
 The manual from Arcturus describes the memory layout. I have dumped:
-Bootloader flash, OS Flash and dumped the RAM with the unit running.
+Bootloader flash, OS Flash and dumped the RAM with the unit running (but before booting, so i'm unsure what usefulness this has).
 Maybe there is a password hiding somewhere?
 
 There's a Xilinx FPGA doing the heavy work, a Cirrus Logic WM8199 AFE (Analog FrontEnd) and a lot of power circuitry.
