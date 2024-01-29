@@ -3,7 +3,7 @@ Not much information is available online about this unit.
 
 My unit is from 2007, but the firmware is dated 2006.
 
-Internally the unit is comprised of a small Linux-computer in a 144-pin SD-DIMM format, uCdimm-MCF5272 Rev 1.3 - 4MB Flash, 16MB RAM from Arcturus Networks.
+Internally the unit is comprised of a small Linux-computer in a 144-pin SO-DIMM format, uCdimm-MCF5272 Rev 1.3 - 4MB Flash, 16MB RAM from Arcturus Networks.
 It's running Linux with a 2.4.17 Kernel.
 
 The manual from Arcturus describes the memory layout. I have dumped:
