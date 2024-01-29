@@ -1,4 +1,4 @@
-The VisionDX 500 is a Digital X-ray sensor unit from Progeny (Not MidMark).
+The VisionDX 500 is a Digital X-ray sensor unit from Progeny (Now MidMark).
 Not much information is available online about this unit.
 
 My unit is from 2007, but the firmware is dated 2006.
