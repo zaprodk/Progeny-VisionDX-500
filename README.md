@@ -17,6 +17,7 @@ sudo mount -t cramfs -o loop OS_FLASH.bin /your/mountpoint
 
 There is two serial ports on the module, brought out to headers J3 & J5.
 Both ports are standard RS232 levels, not TTL.
+The RS232 TX-pin is not active without something connected to the RX-pin (the port goes in low-power mode), so unless RX is connected, no usable data is coming out.
 
 Baudrate is 9600,8,N,1., can be switched into 115200 with "fast" command in the bootloader e.g. for faster dumping of firmware or flashing.
 Pinout:
