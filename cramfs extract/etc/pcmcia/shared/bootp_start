@@ -1,0 +1,52 @@
+#! /bin/sh
+#
+# usage: bootp_start
+#
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $DEVICE,
+#               $SCRIPT_DIR/shared/match
+#               $SCRIPT_DIR/shared/log
+#               $SCRIPT_DIR/shared/put_result
+#               /bin/uname
+#               /bin/ifconfig
+#               /bin/route
+#               /bin/bootpc or /bin/pump
+#
+# returns: 0-success; 1-error
+#          $GATEWAY
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/bootp_start ()"
+
+if $SCRIPT_DIR/shared/match `/bin/uname -r` "2.[2-9].*" ; then
+  $SCRIPT_DIR/shared/log /bin/ifconfig $DEVICE up
+else
+  $SCRIPT_DIR/shared/log /bin/ifconfig $DEVICE 0.0.0.0 up
+  $SCRIPT_DIR/shared/log /bin/route add default dev $DEVICE netmask 0.0.0.0
+fi
+
+RET=0
+
+if [ -x /bin/bootpc ] ; then
+  [ $SCRIPT_DBG -eq 1 ] && echo "   >   Use bootpc for $DEVICE"
+  eval `/bin/bootpc --bootfile '' --returniffail --timeoutwait 10 --dev $DEVICE`
+  $SCRIPT_DIR/shared/log /bin/ifconfig $DEVICE down
+  
+  if [ -n "$GATEWAYS" ] ; then
+    $SCRIPT_DIR/shared/put_result GATEWAY $ACTION "remove"
+    [ $SCRIPT_DBG -eq 1 ] && echo "   GATEWAY=$ACTION"
+  fi
+  RET=$?
+
+elif [ -x /bin/pump ] ; then
+  [ $SCRIPT_DBG -eq 1 ] && echo "   >   Use pump for $DEVICE"
+  $SCRIPT_DIR/shared/log "/bin/pump -i $DEVICE > /dev/null" || RET=1
+
+else
+  RET=1
+
+fi
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/bootp_start (ret=$RET)"
+exit $RET
+

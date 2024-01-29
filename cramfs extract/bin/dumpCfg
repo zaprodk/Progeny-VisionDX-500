@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+
+BIN_DIR="/bin"
+
+HostID=`$BIN_DIR/getCfgParam HOST_ID`
+HostIP=`$BIN_DIR/getCfgParam HOST_IP`
+NetMask=`$BIN_DIR/getCfgParam NET_MASK`
+NFSHost=`$BIN_DIR/getCfgParam NFS_HOST`
+NetBlkLen=`$BIN_DIR/getCfgParam NET_BLOCK_LEN`
+
+echo "HostID    = $HostID"
+echo "HostIP    = $HostIP"
+echo "NetMask   = $NetMask"
+echo "NFSHost   = $NFSHost"
+echo "NetBlkLen = $NetBlkLen"

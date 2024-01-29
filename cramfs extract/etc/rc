@@ -1,0 +1,69 @@
+#!/bin/sh
+#
+# System startup.
+#
+# This file should be in vendors/Arcturus/uC5272
+#
+# 2002-2004 (C) Cygnus Technologies
+# Lyubomir Cekov, 20040510
+
+
+BIN_DIR="/bin";
+SBIN_DIR="/sbin";
+LOG_FILE="/var/rc.log"
+
+
+# Mounts & Setup the ramdisk
+${BIN_DIR}/mount -n -t ramfs ramfs /var
+${BIN_DIR}/mkdir /var/tmp                  >  ${LOG_FILE}
+${BIN_DIR}/mkdir /var/log                  >> ${LOG_FILE}
+${BIN_DIR}/mkdir /var/run                  >> ${LOG_FILE}
+${BIN_DIR}/mkdir /var/lock                 >> ${LOG_FILE}
+
+
+# Mounts the proc filesystem
+${BIN_DIR}/mount -t proc proc /proc        >> ${LOG_FILE}
+
+
+# Reads the configuration params
+HostID=`${BIN_DIR}/getCfgParam HOST_ID`    >> ${LOG_FILE}
+
+
+# Sets hostname
+echo "rc: Hostname -> ${HostID}"           >> ${LOG_FILE}
+${BIN_DIR}/hostname ${HostID}              >> ${LOG_FILE}
+
+
+# Installs the XRAYCCD driver
+echo "rc: Starting the XRAYCCD support"    >> ${LOG_FILE}
+${BIN_DIR}/insmod xrayccd.o                >> ${LOG_FILE}
+
+
+# Starts OWNCOM interface
+echo "rc: Starting the OWNCOM support"     >> ${LOG_FILE}
+${BIN_DIR}/owncom &                        >> ${LOG_FILE}
+
+
+# Starts the network
+mkdir /var/rc
+rm /var/rc/*
+#DEBUG=/var/rc/debug
+DEBUG=/dev/null
+export DEBUG
+
+/etc/network start > $DEBUG
+
+
+# Dumps eth0 settings
+echo "rc: Current network settings:"                             >> ${LOG_FILE}
+${BIN_DIR}/ifconfig eth0                                         >> ${LOG_FILE}
+
+
+# A way to start NFS
+#   portmap &
+#   mount -t nfs -o rsize=1024,wsize=1024 ${NFSHost} /mnt
+
+
+# Starts PCMCIA support
+#echo "rc: Starting the PCMCIA support"                           >> ${LOG_FILE}
+#${SBIN_DIR}/cardmgr &                                            >> ${LOG_FILE}

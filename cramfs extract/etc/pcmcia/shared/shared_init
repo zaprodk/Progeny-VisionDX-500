@@ -1,0 +1,33 @@
+#! /bin/sh
+#
+# usage: shared_init script_name action device [new_scheme]
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $SCRIPT_DIR/shared/usage
+#               $SCRIPT_DIR/shared/put_result
+#
+# returns: 0-success; 1-error
+#          $ACTION, $DEVICE, NEW_SCHEME
+
+
+# Basic network setup
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/shared_init ($2 $3 $4)"
+
+RET=0
+
+# A bit of stuff to do right away...
+if [ $# -lt 3 ] ; then
+  . $SCRIPT_DIR/shared/usage $1
+  RET=$?
+
+else
+  $SCRIPT_DIR/shared/put_result ACTION     $2
+  $SCRIPT_DIR/shared/put_result DEVICE     $3
+  $SCRIPT_DIR/shared/put_result NEW_SCHEME $4
+
+fi
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/shared_init (ret=$RET)"
+exit $RET
+

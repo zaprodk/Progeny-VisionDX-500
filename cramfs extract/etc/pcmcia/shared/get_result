@@ -1,0 +1,8 @@
+#! /bin/sh
+#
+
+if [ -x /tmp/result ] ; then 
+  . /tmp/result
+  rm /tmp/result
+fi
+

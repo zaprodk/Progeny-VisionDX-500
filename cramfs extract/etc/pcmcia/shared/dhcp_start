@@ -1,0 +1,82 @@
+#! /bin/sh
+#
+# usage: dhcp_start
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $DEVICE, $DHCP_HOSTNAME, $RESOLV
+#               $SCRIPT_DIR/shared/match
+#               $SCRIPT_DIR/shared/log
+#               /etc/dhcpc/resolv.conf
+#               /bin/uname
+#               /bin/ifconfig
+#               /bin/route
+#               /bin/dhcpcd or /bin/dhclient or /bin/pump
+#               /bin/grep
+#               /bin/chmod
+#               /bin/sleep
+#               /bin/cat
+#               /bin/mv
+#
+# returns: 0-success; 1-error
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/dhcp_start ()"
+
+if $SCRIPT_DIR/shared/match `/bin/uname -r` "2.[2-9].*" ; then
+  $SCRIPT_DIR/shared/log /bin/ifconfig $DEVICE up
+else
+  $SCRIPT_DIR/shared/log /bin/ifconfig $DEVICE 0.0.0.0 up
+  $SCRIPT_DIR/shared/log /bin/route add default dev $DEVICE netmask 0.0.0.0
+fi
+
+if [ -n $DHCP_HOSTNAME ]; then
+  HN=-h $DHCP_HOSTNAME
+  [ $SCRIPT_DBG -eq 1 ] && echo "   HN=$HN"
+fi
+
+
+RET=0
+
+if [ -x /bin/dhcpcd ] ; then
+  # This is a version check: I know it looks weird
+  if /bin/dhcpcd -XYZZY 2>&1 | /bin/grep -q DHCP ; then
+    $SCRIPT_DIR/shared/log "/bin/dhcpcd -d $HN $DEVICE >/dev/null 2>&1"
+    RET=$?
+
+  else
+    # Jump through hoops for lame 0.70-era dhcpcd
+    L=/var/run/dhcp-lock-$DEVICE
+    /bin/echo "#!/bin/sh\nrm $L" > $L ; /bin/chmod +x $L
+    $SCRIPT_DIR/shared/log "/bin/dhcpcd $HN -c $L $DEVICE >/dev/null 2>&1"
+
+    for t in 0 1 2 3 4 5 6 7 8 9 ; do
+      /bin/sleep 2 ; if [ ! -e $L ] ; then break ; fi
+    done
+    rm -f $L
+
+    if [ -e /etc/dhcpc/resolv.conf ] ; then
+      echo "# $DEVICE begin"           >  $RESOLV.N
+      /bin/chmod og+r $RESOLV.N
+      /bin/cat /etc/dhcpc/resolv.conf  >> $RESOLV.N
+      echo "# $DEVICE end"             >> $RESOLV.N
+      /bin/cat $RESOLV                 >> $RESOLV.N
+      /bin/mv $RESOLV.N $RESOLV
+    fi
+  fi
+
+elif [ -x /bin/dhclient ] ; then
+  $SCRIPT_DIR/shared/log "/bin/dhclient $DEVICE >/dev/null 2>&1"
+  RET=$?
+
+elif [ -x /bin/pump ] ; then
+  $SCRIPT_DIR/shared/log "/bin/pump $HN -i $DEVICE > /dev/null"
+  RET=$?
+
+else
+  RET=1
+
+fi
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/dhcp_start (ret=$RET)"
+exit $RET
+

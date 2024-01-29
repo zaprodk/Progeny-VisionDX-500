@@ -1,0 +1,129 @@
+#!/bin/sh
+#
+# usage: network start|stop
+#
+# depends from: $DEBUG, $BIN, $SCRIPT, $CONSOLE, $SHELL
+#               $BIN/dirname
+#               $BIN/killproc
+#               $SCRIPT/fec_auto
+#               $SCRIPT/fec_down
+#               $SCRIPT/fec_up
+#
+# ;reads from /var/rc/{1}_c:
+# ;              $IP, $NETMASK, $BROADCAST, $MTU, $NETWORK, $GATEWAY
+#
+# returns: 0-success; <>0-error
+
+
+if [ -z "$DEBUG"   ] ; then DEBUG="/dev/null"      ; fi
+if [ -z "$BIN"     ] ; then BIN="/bin"             ; fi
+if [ -z "$SCRIPT"  ] ; then SCRIPT="/etc"          ; fi
+if [ -z "$CONSOLE" ] ; then CONSOLE="/dev/console" ; fi
+if [ -z "$SHELL"   ] ; then SHELL="/bin/sh"        ; fi
+
+echo "-> $0 ($1)"                                                    >> $DEBUG
+
+ETH0_CFG_FILE="/var/rc/eth0_cfg"
+
+case "$1" in
+"start") 
+      echo "   $0 [INF]: Starting the network ..."                   >> $DEBUG
+      echo "$0 [INF]: Starting the network ..."                      >> $CONSOLE
+
+      # Starts local loopback:
+      if [ -x "$BIN/ifconfig" ] ; then
+        $BIN/ifconfig lo 127.0.0.1 netmask 255.0.0.0                 >> $DEBUG
+        RESULT=$?
+      else
+        echo "   $0 [ERR]: $BIN/ifconfig is not available"           >> $DEBUG
+        echo "<- $0 (ret=1)"                                         >> $DEBUG
+        exit 1
+      fi
+
+      if [ $RESULT -ne 0 ] ; then
+        echo "   $0 [ERR]: Unable to start local loop"               >> $DEBUG
+        echo "<- $0 (ret=1)"                                         >> $DEBUG
+        exit 1
+      fi
+
+      # Starts eth0
+      if [ -x "$SCRIPT/fec_auto" ] ; then
+        $SCRIPT/fec_auto eth0 &
+        RESULT=$?
+      else
+        echo "   $0 [ERR]: $SCRIPT/fec_auto is not available"        >> $DEBUG
+        echo "<- $0 (ret=1)"                                         >> $DEBUG
+        exit 1
+      fi
+
+      if [ $RESULT -ne 0 ] ; then
+        echo "   $0 [ERR]: Unable to start eth0"                     >> $DEBUG
+        echo "<- $0 (ret=1)"                                         >> $DEBUG
+        exit 1
+      fi
+
+      # Somthing else
+      echo "   $0 [INF]: The network has been started!"              >> $DEBUG
+      echo "$0 [INF]: The network has been started!"                 >> $CONSOLE
+      ;;
+
+
+"stop") 
+      echo "   $0 [INF]: Stoping the network ..."                    >> $DEBUG
+      echo "   $0 [INF]: Stoping the network ..."
+
+      # Checks the configuration
+      if [ ! -x "$ETH0_CFG_FILE" ] ; then
+        echo "   $0 [ERR]: Invalid conf. file $ETH0_CFG_FILE"        >> $DEBUG
+        echo "<- $0 (ret=1)"                                         >> $DEBUG
+        exit 1
+      fi
+
+      # Stops eth0
+      if [ -x "$BIN/killproc" -a -x "$SCRIPT/fec_auto" ] ; then
+        $BIN/killproc -9 "$SHELL $SCRIPT/fec_auto eth0"              >> $DEBUG
+        RESULT=$?
+      else
+        echo "   $0 [ERR]: Unable to stop $SCRIPT/fec_auto"          >> $DEBUG
+        echo "<- $0 (ret=1)"                                         >> $DEBUG
+        exit 1
+      fi
+
+      if [ $RESULT -ne 0 ] ; then
+        echo "   $0 [ERR]: Unable to disable eth0 auto-restart"      >> $DEBUG
+        echo "<- $0 (ret=1)"                                         >> $DEBUG
+        exit 1
+      fi
+
+      if [ -x "$SCRIPT/fec_down" ] ; then
+        $SCRIPT/fec_down eth0                                        >> $DEBUG
+        RESULT=$?
+      else
+        echo "   $0 [ERR]: $SCRIPT/fec_down is not available"        >> $DEBUG
+        echo "<- $0 (ret=1)"                                         >> $DEBUG
+        exit 1
+      fi
+
+      if [ $RESULT -ne 0 ] ; then
+        echo "   $0 [ERR]: Unable to turn eth0 down"                 >> $DEBUG
+        echo "<- $0 (ret=1)"                                         >> $DEBUG
+        exit 1
+      fi
+
+      # Somthing else
+      echo "   $0 [INF]: The network has been stoped!"               >> $DEBUG
+      echo "$0 [INF]: The network has been stoped!"                  >> $CONSOLE
+      ;;
+
+
+*) 
+      echo "   $0 [ERR]: Wrong parameters"                           >> $DEBUG
+      echo "<- $0 (ret=1)"                                           >> $DEBUG
+      exit 1
+      ;;
+esac
+
+
+echo "<- $0 (ret=0)"                                                 >> $DEBUG
+exit 0
+

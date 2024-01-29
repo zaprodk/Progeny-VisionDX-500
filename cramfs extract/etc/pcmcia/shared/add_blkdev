@@ -1,0 +1,77 @@
+#! /bin/sh
+#
+# usage: add_blkdev [device]
+#
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $LINK, $DO_FSTAB, $FSTYPE, $OPTS, $MOUNTPT
+#               $DO_FSCK, $DO_MOUNT
+#               $SCRIPT_DIR/shared/is_true
+#               $SCRIPT_DIR/shared/log
+#               /bin/ln
+#               /bin/rm
+#               /bin/fsck
+#               /bin/mount
+#               /etc/fstab
+#
+# returns: 0-success; 1-error
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/add_blkdev ($1)"
+
+
+if [ -n "$LINK" ] ; then
+  if [ -L $LINK ] ; then /bin/rm $LINK ; fi
+  /bin/ln -s $1 $LINK
+  if [ $? -ne 0 ] ; then
+    [ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/add_blkdev (ret=1)"
+    exit 1
+  fi
+fi
+
+
+if $SCRIPT_DIR/shared/is_true $DO_FSTAB ; then
+  if [ -n $FSTYPE ] ; then
+    FS=$FSTYPE
+  else
+    FS="-auto"
+  fi
+
+  if [ -n $OPTS ] ; then
+    O=$OPTS
+  else
+    O="-default"
+  fi
+
+  echo "$1 $MOUNTPT $FS $O 0 0" >> /etc/fstab
+fi
+
+
+if $SCRIPT_DIR/shared/is_true $DO_FSCK ; then
+  $SCRIPT_DIR/shared/log /bin/fsck -Ta $1
+  if [ $? -gt 1 ] ; then
+    [ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/add_blkdev (ret=1)"
+    exit 1
+  fi
+fi
+
+
+if $SCRIPT_DIR/shared/is_true $DO_MOUNT ; then
+  if [ -n $FSTYPE ] ; then
+    FS="-t $FSTYPE"
+  fi
+
+  if [ -n $OPTS ] ; then
+    O="-o $OPTS"
+  fi
+
+  $SCRIPT_DIR/shared/log /bin/mount -v $O $FS $1 $MOUNTPT
+  if [ $? -ne 0 ] ; then
+    [ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/add_blkdev (ret=1)"
+    exit 1
+  fi
+fi
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/add_blkdev (ret=0)"
+exit 0
+

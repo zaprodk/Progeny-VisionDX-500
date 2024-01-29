@@ -1,0 +1,71 @@
+#! /bin/sh
+#
+# usage: rm_parts script [address] [parts]
+#
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $DEVICE
+#               $SCRIPT_DIR/$1.opt
+#               $SCRIPT_DIR/shared/do_fuser
+#               $SCRIPT_DIR/shared/log
+#               $SCRIPT_DIR/shared/is_true
+#               /bin/test
+#               /bin/mount
+#               /bin/umount
+#               /bin/grep
+#               /bin/sed
+#               /bin/mv
+#               /etc/fstab
+#
+# returns: 0-success; 1-error
+#          $ADDRESS, $DO_FSTAB, $DO_FSCK, $DO_MOUNT
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/rm_parts ($1 $2 $3)"
+
+BLK=/dev/$DEVICE
+
+
+/bin/test -b $BLK
+if [ $? -ne 0 ] ; then
+  [ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/rm_parts (ret=1)"
+  exit 1
+fi
+
+
+if [ -n $3 ] ; then
+  P_LIST=$3
+else
+  P_LIST=""
+fi
+
+
+for PART in $P_LIST ; do
+  if [ -n "$PART" ] ; then
+    ADDRESS="$2,$PART"
+    unset DO_FSTAB DO_FSCK DO_MOUNT
+    . $SCRIPT_DIR/$1.opts                ???? Result. Remove <.>
+  fi
+
+  if $SCRIPT_DIR/shared/is_true $DO_FSTAB ; then
+    /bin/grep -v "$BLK$PART " /etc/fstab > /etc/fstab.N
+    /bin/mv /etc/fstab.N /etc/fstab
+  fi
+done
+
+
+$SCRIPT_DIR/shared/do_fuser -k -m /dev/${DEVICE}* > /dev/null
+
+LIST=`/bin/mount | /bin/sed -ne "s+^\($BLK[0-9]*\) .*+\1+p"`
+
+if [ -n "$LIST" ] ; then
+  for MT in $LIST ; do
+    $SCRIPT_DIR/shared/log /bin/umount -v $MT
+    if [ $? -ne 0 ] ; then
+      [ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/rm_parts (ret=1)"
+      exit 1
+    fi
+  done
+fi
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/rm_parts (ret=0)"
+exit 0

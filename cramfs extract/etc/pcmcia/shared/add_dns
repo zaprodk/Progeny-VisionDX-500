@@ -1,0 +1,30 @@
+#! /bin/sh
+#
+# usage: add_dns
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $DEVICE, $RESOLV, $DOMAIN, $SEARCH, $DNSSRVS,
+#               $DNS_1, $DNS_2, $DNS_3
+#               /bin/chmod
+#               /bin/sed
+#               /bin/mv
+#
+# returns: 0-success; 1-error
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/add_dns ()"
+
+/bin/chmod 666 $RESOLV.N
+[ -n "$DOMAIN" ] && echo "domain $DOMAIN" >> $RESOLV.N
+[ -n "$SEARCH" ] && echo "search $SEARCH" >> $RESOLV.N
+
+for DNS in $DNSSRVS $DNS_1 $DNS_2 $DNS_3 ; do
+  echo "nameserver $DNS" >> $RESOLV.N
+done
+
+echo "# $DEVICE end" >> $RESOLV.N
+/bin/sed -e "/# $DEVICE begin/,/# $DEVICE end/d" $RESOLV >> $RESOLV.N
+/bin/mv $RESOLV.N $RESOLV
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/add_dns (ret=0)"
+exit 0
+

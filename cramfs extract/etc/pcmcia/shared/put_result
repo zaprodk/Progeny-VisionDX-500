@@ -1,0 +1,23 @@
+#! /bin/sh
+#
+# usage: put_result var_name var_value ["remove" to remove from environment]
+#
+# depends from: /bin/chmod
+#
+# returns: 0-success; 1-error
+
+
+if [ ! -x /tmp/result ] ; then
+  echo "#! /bin/sh"          >  /tmp/result
+  /bin/chmod 777 /tmp/result
+  echo "#"                   >> /tmp/result
+fi
+
+if [ $3 = "remove" ]
+  echo "set - "$1            >> /tmp/result
+fi
+
+echo $1"="$2                 >> /tmp/result
+echo "export "$1             >> /tmp/result
+
+exit 0

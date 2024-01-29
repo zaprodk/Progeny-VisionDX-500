@@ -1,0 +1,174 @@
+#!/bin/sh
+#
+# wireless network 1.63 2000/02/09 03:12:42 (David Hinds/Jean Tourrilhes)
+#
+# Specific configuration of a PCMCIA wireless LAN adapter
+#
+# This script is invoked automatically by the network script; it should
+# not be executed by hand.
+#
+# Note : it would be real cool to have the name of the driver as part
+# of the extended device address
+#
+#
+# usage: wireless script_name
+#
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $ADDRESS, $ACTION
+#               $SCRIPT_DIR/wireless.opt
+#               $SCRIPT_DIR/shared/get_result
+#               $SCRIPT_DIR/shared/put_result
+#               $SCRIPT_DIR/shared/log
+#               $SCRIPT_DIR/shared/chk_simple
+#               $SCRIPT_DIR/shared/usage
+#               /bin/iwconfig
+#               /bin/iwspy
+#               /bin/iwpriv
+#
+# returns: 0-success; 1-error
+#          $INFO, $ESSID, $NWID, $MODE, $FREQ, $CHANNEL, $SENS,
+#          $RATE, $KEY, $RTS, $FRAG, $IWCONFIG, $IWSPY, $IWPRIV
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/wireless ()"
+
+# Load site-specific settings
+$SCRIPT_DIR/wireless.opts
+. $SCRIPT_DIR/shared/get_result
+
+
+if [ $SCRIPT_DBG -eq 1 ] ; then
+  echo "   INFO = $INFO"
+  echo "   ESSID = $ESSID"
+  echo "   NWID = $NWID"
+  echo "   MODE = $MODE"
+  echo "   FREQ = $FREQ"
+  echo "   CHANNEL = $CHANNEL"
+  echo "   SENS = $SENS"
+  echo "   RATE = $RATE"
+  echo "   KEY = $KEY"
+  echo "   RTS = $RTS"
+  echo "   FRAG = $FRAG"
+  echo "   IWCONFIG = $IWCONFIG"
+  echo "   IWSPY = $IWSPY"
+  echo "   IWPRIV = $IWPRIV"
+fi
+
+
+RET=0
+
+[ $SCRIPT_DBG -eq 1 ] && echo "   ACTION=$ACTION"
+case "$ACTION" in
+
+'start')
+   [ -n "$VERBOSE" -a -n "$INFO" ] && echo "$INFO"
+
+   # Set all desired settings via iwconfig
+
+   # Mode need to be first : some settings apply only in a specific mode !
+   if [ -n "$MODE" ] ; then
+     $SCRIPT_DIR/shared/log /bin/iwconfig $DEVICE mode $MODE
+   fi
+
+   # This is a bit hackish, but should do the job right...
+   if [ ! -n "$NICKNAME" ] ; then
+     NICKNAME=`/bin/hostname`
+     [ $SCRIPT_DBG -eq 1 ] && echo "   NICKNAME=$NICKNAME"
+   fi
+
+   if [ -n "$ESSID" -o -n "$MODE" ] ; then
+     $SCRIPT_DIR/shared/log /bin/iwconfig $DEVICE nick \"$NICKNAME\" >/dev/null 2>&1
+   fi
+
+   # Regular stuff...
+   if [ -n "$NWID" ] ; then
+     $SCRIPT_DIR/shared/log /bin/iwconfig $DEVICE nwid $NWID
+   fi
+
+   if [ -n "$FREQ" ] ; then
+     $SCRIPT_DIR/shared/log /bin/iwconfig $DEVICE freq $FREQ
+   elif [ -n "$CHANNEL" ] ; then
+     $SCRIPT_DIR/shared/log /bin/iwconfig $DEVICE channel $CHANNEL
+   fi
+
+   if [ -n "$SENS" ] ; then
+     $SCRIPT_DIR/shared/log /bin/iwconfig $DEVICE sens $SENS
+   fi
+
+   if [ -n "$RATE" ] ; then
+     $SCRIPT_DIR/shared/log /bin/iwconfig $DEVICE rate $RATE
+   fi
+
+   if [ -n "$KEY" ] ; then
+     $SCRIPT_DIR/shared/log /bin/iwconfig $DEVICE key $KEY
+   fi
+
+   if [ -n "$RTS" ] ; then
+     $SCRIPT_DIR/shared/log /bin/iwconfig $DEVICE rts $RTS
+   fi
+
+   if [ -n "$FRAG" ] ; then
+     $SCRIPT_DIR/shared/log /bin/iwconfig $DEVICE frag $FRAG
+   fi
+
+
+   # More specific parameters
+   if [ -n "$IWCONFIG" ] ; then
+     $SCRIPT_DIR/shared/log /bin/iwconfig $DEVICE $IWCONFIG
+   fi
+
+   if [ -n "$IWSPY" ] ; then
+     $SCRIPT_DIR/shared/log /bin/iwspy $DEVICE $IWSPY
+   fi
+
+   if [ -n "$IWPRIV" ] ; then
+     $SCRIPT_DIR/shared/log /bin/iwpriv $DEVICE $IWPRIV
+   fi
+
+   # ESSID need to be last : most device re-perform the scanning/discovery
+   # when this is set, and things like encryption keys are better be
+   # defined if we want to discover the right set of APs/nodes.
+   if [ -n "$ESSID" ] ; then
+     $SCRIPT_DIR/shared/log /bin/iwconfig $DEVICE essid \"$ESSID\"
+   fi
+   ;;
+
+
+'cksum')
+   $SCRIPT_DIR/shared/chk_simple "$NEW_SCHEME,$SOCKET,$INSTANCE,$HWADDR"
+   WIRELESS=$?
+   ;;
+
+
+'stop'|'check'|'restart'|'suspend'|'resume')
+   ;;
+
+
+*)
+   $SCRIPT_DIR/shared/usage $1
+   RET=1
+   ;;
+
+esac
+
+
+
+$SCRIPT_DIR/shared/put_result INFO       "\"$INFO\""
+$SCRIPT_DIR/shared/put_result ESSID      $ESSID
+$SCRIPT_DIR/shared/put_result NWID       $NWID
+$SCRIPT_DIR/shared/put_result MODE       $MODE
+$SCRIPT_DIR/shared/put_result FREQ       $FREQ
+$SCRIPT_DIR/shared/put_result CHANNEL    $CHANNEL
+$SCRIPT_DIR/shared/put_result SENS       $SENS
+$SCRIPT_DIR/shared/put_result RATE       $RATE
+$SCRIPT_DIR/shared/put_result KEY        $KEY
+$SCRIPT_DIR/shared/put_result RTS        $RTS
+$SCRIPT_DIR/shared/put_result FRAG       $FRAG
+$SCRIPT_DIR/shared/put_result IWCONFIG   $IWCONFIG
+$SCRIPT_DIR/shared/put_result IWSPY      $IWSPY
+$SCRIPT_DIR/shared/put_result IWPRIV     $IWPRIV
+
+
+echo " <- $SCRIPT_DIR/wireless (ret=$RET)"
+exit $RET
+

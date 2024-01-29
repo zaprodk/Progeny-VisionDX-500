@@ -1,0 +1,29 @@
+#! /bin/sh
+#
+# usage: chk_simple script [new-address]
+#
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               /bin/grep
+#               /bin/md5sum
+#
+# returns: 0-success; 1-error
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/chk_simple ($1 $2)"
+
+
+ADDRESS=""
+OLD=`set | /bin/grep -v '^OLD=' | /bin/md5sum`
+
+ADDRESS="$2"
+. $1.opts              ???? result; remove .
+
+ADDRESS=""
+NEW=`set | /bin/grep -v '^OLD=' | /bin/md5sum`
+
+[ "$OLD" = "$NEW" ]
+RET=$?
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/chk_simple (ret=$RET)"
+exit $RET
+

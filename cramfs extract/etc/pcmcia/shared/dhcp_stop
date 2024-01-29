@@ -1,0 +1,46 @@
+#! /bin/sh
+#
+# usage: dhcp_stop
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $DEVICE
+#               $SCRIPT_DIR/shared/log
+#               /bin/cat
+#               /bin/kill
+#               /bin/sleep
+#               /bin/dhcpcd or /bin/dhclient or /bin/pump
+#               /bin/grep
+#               /bin/rm
+#               /bin/sleep
+#
+# returns: 0-success; 1-error
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/dhcp_stop ()"
+
+
+if [ -x /bin/dhcpcd ] ; then
+  PID=`/bin/cat /var/run/dhcpcd-$DEVICE.pid 2>/dev/null`
+
+  if [ -n "$PID" ] ; then
+    /bin/kill -TERM $PID
+    /bin/sleep 2
+  fi
+
+  /bin/dhcpcd -XYZZY 2>&1 | /bin/grep -q DHCP || \
+      /bin/rm -f /var/run/dhcpcd-$DEVICE.pid
+
+elif [ -x /bin/dhclient ] ; then
+  PID=`/bin/cat /var/run/dhclient.pid 2>/dev/null`
+
+  if [ -n "$PID" ] ; then
+    /bin/kill -TERM $PID
+  fi
+
+elif [ -x /bin/pump ] ; then
+  $SCRIPT_DIR/shared/log /bin/pump -r -i $DEVICE
+fi
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/dhcp_stop (ret=0)"
+exit 0
+

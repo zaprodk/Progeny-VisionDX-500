@@ -1,0 +1,36 @@
+#! /bin/sh
+#
+# usage: log <command with parameters>
+#
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $SCRIPT_DIR/shared/do_eval
+#               /bin/cat
+#               /bin/rm
+#
+# returns: 0-success; 1-error
+
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/log ($*)"
+
+
+if [ -n "$VERBOSE" ] ; then
+  echo "$*" ; eval $*
+  RET=$?
+
+else
+  # if command fails, print the command followed by its output
+  LOG=/var/run/cardmgr.out
+
+  $SCRIPT_DIR/shared/do_eval $* >$LOG 2>&1
+  RET=$?
+
+  if [ $RET -ne 0 -a $SCRIPT_DBG -ne 1 ] ; then echo "$*" ; fi
+
+  /bin/cat $LOG 1>&2
+  /bin/rm -f $LOG
+fi
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/log (ret=$RET)"
+exit $RET
+

@@ -1,0 +1,166 @@
+#!/bin/sh
+#
+# usage: nfs_down interface
+#
+# depends from: $DEBUG, $BIN, $SCRIPT
+#               $BIN/expr
+#               $BIN/umount
+#               $BIN/portmap
+#               $BIN/rm
+#               #$SCRIPT/setCfg_$1
+#
+# reads from /var/rc/{1}_cfg:
+#               NFSLOCAL
+#
+# returns: 0-success;
+#          1-Error: Wrong Interface
+#          1-Error: External Command or File Is Not Available
+#          1-Error: The NFS is not Started for This Interface
+#          #1-Error: Invalid Configuration File
+#          2-TryAgain: The Access is Already Locked from Somebody Else
+#          3-Error: Unable to unmount NFS directory
+#          4-Error: Unable to stop NFS portmap
+
+
+if [ -z "$DEBUG"  ] ; then DEBUG="/dev/null"  ; fi
+if [ -z "$BIN"    ] ; then BIN="/bin"         ; fi
+if [ -z "$SCRIPT" ] ; then SCRIPT="/etc"      ; fi
+
+echo "-> $0 ($1)"                                                    >> $DEBUG
+
+
+# Parameters check
+if [ -z "$1" ] ; then
+  echo "   $0 [ERR]: Wrong interface $1"                             >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+else
+  INTF=$1
+fi
+
+
+# Set some constants
+CFG_FILE="/var/rc/${INTF}_cfg"
+LOCK_FILE="/var/rc/${INTF}_nfs_lock"
+START_FILE="/var/rc/${INTF}_nfs"
+INSTANCE_FILES="/var/rc/*_nfs"
+
+
+# Checks the commands availavility
+if [ ! -x "$BIN/rm" ] ; then
+  echo "   $0 [ERR]: $BIN/rm is not available"                       >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$BIN/portmap" ] ; then
+  echo "   $0 [ERR]: $BIN/portmap is not available"                  >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$BIN/expr" ] ; then
+  echo "   $0 [ERR]: $BIN/expr is not available"                     >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$BIN/umount" ] ; then
+  echo "   $0 [ERR]: $BIN/umount is not available"                    >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+
+# Lock the access 
+if [ ! -f "$LOCK_FILE" ] ; then
+  echo "$0"  >> "$LOCK_FILE"
+else
+  echo "   $0 [ERR]: The lock file $LOCK_FILE exists"                >> $DEBUG
+  echo "<- $0 (ret=2)"                                               >> $DEBUG
+  exit 2
+fi
+
+
+# Check for previous instances 
+if [ ! -f "$START_FILE" ] ; then
+  echo "   $0 [ERR]: NFS is not started for $INTF interface"         >> $DEBUG
+
+  # Unlock the network access
+  $BIN/rm $LOCK_FILE                                                 >> $DEBUG
+
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+NUM_INST=0
+for i in $INSTANCE_FILES ; do
+  NUM_INST=`$BIN/expr "$NUM_INST" "+" 1`
+done
+
+echo "   $0 [INF]: NFS client is started for $NUM_INST interfaces"   >> $DEBUG
+
+# Get the configuration
+if [ -x "$CFG_FILE" ] ; then
+  . "$CFG_FILE"
+else
+  echo "   $0 [ERR]: Invalid configuration file $CFG_FILE"           >> $DEBUG
+
+  # Unlock the network access
+  $BIN/rm $LOCK_FILE                                                 >> $DEBUG
+
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+# Stops the NFS service 
+echo "   $0 [INF]: Stops NFS service"                                >> $DEBUG
+
+$BIN/umount $NFSLOCAL                                                >> $DEBUG
+RESULT=$?
+
+if [ $RESULT -ne 0 ] ; then 
+  echo "   $0 [ERR]: Unable to umount NFS $NFSLOCAL"                 >> $DEBUG
+
+  # Unlock the network access
+  $BIN/rm $LOCK_FILE                                                 >> $DEBUG
+
+  echo "<- $0 (ret=3)"                                               >> $DEBUG
+  exit 3
+fi
+
+
+if [ $NUM_INST -eq 1 ] ; then
+  $BIN/killproc -9 "$SHELL $BIN/portmap"                             >> $DEBUG
+  RESULT=$?
+
+  if [ $RESULT -ne 0 ] ; then
+    echo "   $0 [ERR]: Unable to stop the NFS $BIN/portmap"          >> $DEBUG
+
+    # Unlock the network access
+    $BIN/rm $LOCK_FILE                                               >> $DEBUG
+
+    echo "<- $0 (ret=4)"                                             >> $DEBUG
+    exit 4
+  fi
+
+else
+  echo "   $0 [INF]: Portmap is still active for other interface"    >> $DEBUG
+fi
+
+
+# Mark NFS stopped for this interface
+if [ -f "$START_FILE" ] ; then
+  $BIN/rm $START_FILE                                                >> $DEBUG
+else
+  echo "   $0 [WRN]: The $START_FILE do not exists"                  >> $DEBUG
+fi
+
+
+# Unlock the network access
+$BIN/rm $LOCK_FILE                                                   >> $DEBUG
+
+echo "<- $0 (ret=0)"                                                 >> $DEBUG
+exit 0
+

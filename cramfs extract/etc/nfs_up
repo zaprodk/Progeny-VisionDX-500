@@ -1,0 +1,156 @@
+#!/bin/sh
+#
+# usage: nfs_up interface
+#
+# depends from: $DEBUG, $BIN, $SCRIPT
+#               $BIN/expr
+#               $BIN/mount
+#               $BIN/portmap
+#               $BIN/rm
+#               $SCRIPT/setCfg_$1
+#
+# reads from /var/rc/{1}_cfg:
+#              NFSREMOTE, NFSLOCAL
+#
+# returns: 0-success;
+#          1-Error: Wrong Interface
+#          1-Error: External Command or File Is Not Available
+#          1-Error: The NFS is Already Started for This Interface
+#          1-Error: Invalid Configuration File
+#          2-TryAgain: The Access is Already Locked from Somebody Else
+#          3-Error: Unable to mount NFS directory
+
+
+if [ -z "$DEBUG"  ] ; then DEBUG="/dev/null"  ; fi
+if [ -z "$BIN"    ] ; then BIN="/bin"         ; fi
+if [ -z "$SCRIPT" ] ; then SCRIPT="/etc"      ; fi
+
+echo "-> $0 ($1)"                                                    >> $DEBUG
+
+
+# Parameters check
+if [ -z "$1" ] ; then
+  echo "   $0 [ERR]: Wrong interface $1"                             >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+else
+  INTF=$1
+fi
+
+
+# Set some constants
+CFG_FILE="/var/rc/${INTF}_cfg"
+LOCK_FILE="/var/rc/${INTF}_nfs_lock"
+START_FILE="/var/rc/${INTF}_nfs"
+INSTANCE_FILES="/var/rc/*_nfs"
+
+
+# Checks the commands availavility
+if [ ! -x "$BIN/rm" ] ; then
+  echo "   $0 [ERR]: $BIN/rm is not available"                       >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$BIN/portmap" ] ; then
+  echo "   $0 [ERR]: $BIN/portmap is not available"                  >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$BIN/expr" ] ; then
+  echo "   $0 [ERR]: $BIN/expr is not available"                     >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$BIN/mount" ] ; then
+  echo "   $0 [ERR]: $BIN/mount is not available"                    >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+
+# Lock the access 
+if [ ! -f "$LOCK_FILE" ] ; then
+  echo "$0"  >> "$LOCK_FILE"
+else
+  echo "   $0 [ERR]: The lock file $LOCK_FILE exists"                >> $DEBUG
+  echo "<- $0 (ret=2)"                                               >> $DEBUG
+  exit 2
+fi
+
+
+# Check for previous instances 
+if [ -f "$START_FILE" ] ; then
+  echo "   $0 [ERR]: NFS is already started for $INTF interface"     >> $DEBUG
+
+  # Unlock the network access
+  $BIN/rm $LOCK_FILE                                                 >> $DEBUG
+
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Get the configuration
+if [ -x "$CFG_FILE" ] ; then
+  . "$CFG_FILE"
+else
+  echo "   $0 [ERR]: Invalid configuration file $CFG_FILE"           >> $DEBUG
+
+  # Unlock the network access
+  $BIN/rm $LOCK_FILE                                                 >> $DEBUG
+
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Starts the NFS service
+echo "   $0 [INF]: Starts NFS service"                               >> $DEBUG
+
+if [ ! -f "$INSTANCE_FILES" ] ; then
+  $BIN/portmap &
+else
+  echo "   $0 [INF]: NFS service is already started once"            >> $DEBUG
+fi
+
+
+# Mount NFS service
+echo "   $0 [INF]: Mounting NFS $NFSREMOTE to $NFSLOCAL ..."         >> $DEBUG
+LOOPS=0
+until [ $LOOPS -gt 3 ] ; do
+  LOOPS=`$BIN/expr "$LOOPS" "+" 1`
+  $BIN/mount -t nfs -o rsize=1024,wsize=1024 $NFSREMOTE $NFSLOCAL    >> $DEBUG
+  RESULT=$?
+  if [ $RESULT -eq 0 ] ; then break ; fi
+done
+
+
+if [ $RESULT -ne 0 ] ; then 
+  echo "   $0 [ERR]: Unable to mount NFS $NFSREMOTE"                 >> $DEBUG
+
+  # Unlock the network access
+  $BIN/rm $LOCK_FILE                                                 >> $DEBUG
+
+  echo "<- $0 (ret=3)"                                               >> $DEBUG
+  exit 3
+fi
+
+
+# Mark NFS started for this interface
+if [ ! -f "$START_FILE" ] ; then
+  echo "$0"  >> "$START_FILE"
+else
+  echo "   $0 [WRN]: The $START_FILE already exists"                 >> $DEBUG
+fi
+
+
+# Unlock the network access
+$BIN/rm $LOCK_FILE                                                   >> $DEBUG
+
+echo "<- $0 (ret=0)"                                                 >> $DEBUG
+exit 0
+

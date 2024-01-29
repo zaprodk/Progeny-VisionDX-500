@@ -1,0 +1,28 @@
+#! /bin/sh
+#
+# usage: do_fuser fuser_parameters
+#
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $NO_USER
+#               $SCRIPT_DIR/shared/is_true
+#               /bin/fuser
+#
+# returns: 0-success; 1-error
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/do_fuser ($*)"
+
+
+$SCRIPT_DIR/shared/is_true $NO_FUSER
+if [ $? -ne 0 ] ; then
+  [ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/do_fuser (ret=1)"
+  exit 1
+fi
+
+/bin/fuser $*
+RET=$?
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/do_fuser (ret=$RET)"
+exit $RET
+

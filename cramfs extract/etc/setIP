@@ -1,0 +1,163 @@
+#!/bin/sh
+#
+# usage: setIP interface [additional_cfg_params]
+#
+# depends from: $DEBUG, $BIN, $SBIN
+#               $BIN/ifconfig
+#               $BIN/route
+#               $SBIN/ifuser
+#
+# reads from /var/rc/${1}_c:
+#               IP, NETMASK, NETWORK, GATEWAY
+#               NETMASK_E, BROADCAST_E, MTU_E
+#
+# returns: 0-success;
+#          1-Error: Wrong Interface
+#          1-Error: External Command or File Is Not Available
+#          1-Error: Invalid Configuration File
+#          2-Error: Invalid or Missing DHCP Configuration File
+#          3-Error: Non-zero Return From External Command 
+#          4-Error: Unable to Set up Routing Information
+
+
+
+if [ -z "$DEBUG"   ] ; then DEBUG="/dev/null"        ; fi
+if [ -z "$BIN"     ] ; then BIN="/bin"               ; fi
+if [ -z "$SBIN"    ] ; then SBIN="/sbin"             ; fi
+
+echo "-> $0 ($1)"                                                    >> $DEBUG
+
+
+# Parameters check
+if [ -z "$1" ] ; then
+  echo "   $0 [ERR]: Wrong interface"                                >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+else
+  INTF=$1
+fi
+
+DHCP_FILE=$2
+
+
+# Get the configuration
+CFG_FILE="/var/rc/${INTF}_cfg"
+if [ -e "$CFG_FILE" ] ; then
+  "$CFG_FILE"
+else
+  echo "   $0 [ERR]: Invalid configuration file"                     >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Loads the lattest DHCP configuration if DHCP client mode is enabled
+if [ $ENABLE_DHCP -eq 1 ] ; then
+  if [ -z "$DHCP_FILE" ] ; then
+    echo "   $0 [ERR]: DHCP client mode, but no DHCP config. file"   >> $DEBUG
+    echo "<- $0 (ret=2)"                                             >> $DEBUG
+    exit 2
+  else
+    if [ -e "$DHCP_FILE" ] ; then
+      . "$DHCP_FILE"
+    else
+      echo "   $0 [ERR]: Invalid DHCP configuration file"            >> $DEBUG
+      echo "<- $0 (ret=2)"                                           >> $DEBUG
+      exit 2
+    fi
+  fi
+fi
+
+
+# Basic network setup
+echo "   $0 [INF]: Set inet $IP $NETMASK_E $BROADCAST_E $MTU_E"      >> $DEBUG
+
+if [ -x "$BIN/ifconfig" ] ; then
+  $BIN/ifconfig $INTF $IP $NETMASK_E $BROADCAST_E $MTU_E             >> $DEBUG
+  RESULT=$?
+else
+  echo "   $0 [ERR]: $BIN/ifconfig is not available"                 >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ $RESULT -ne 0 ] ; then
+  echo "   $0 [ERR]: $BIN/ifconfig returned $RESULT <> 0"            >> $DEBUG
+  echo "<- $0 (ret=3)"                                               >> $DEBUG
+  exit 3
+fi
+
+
+# Check availability of some external functions
+if [ ! -x "$SBIN/ifuser" ] ; then
+  echo "   $0 [ERR]: $BIN/ifuser is not available"                   >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$BIN/route" ] ; then
+  echo "   $0 [ERR]: $BIN/route is not available"                    >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+RESULT=0
+
+# Update route information to the new network
+if [ -n "$NETWORK" ] ; then
+  $SBIN/ifuser $INTF $NETWORK                                        >> $DEBUG
+  RESULT=$?
+
+  if [ $RESULT -eq 0 ] ; then
+    echo "   $0 [INF]: Add route to $NETWORK $NETMASK"               >> $DEBUG
+
+    $BIN/route add -net $NETWORK $NETMASK dev $INTF                  >> $DEBUG
+    RESULT=$?
+  fi
+
+  if [ $RESULT -ne 0 ] ; then
+    echo "   $0 [ERR]: Unable to create a routing path to $NETWORK"  >> $DEBUG
+  fi
+
+
+# Or update route information to the new gateway
+elif [ -n "$GATEWAY" ] ; then
+  $SBIN/ifuser $INTF $GATEWAY                                        >> $DEBUG
+  RESULT=$?
+
+  if [ $RESULT -eq 0 ] ; then
+    echo "   $0 [INF]: Add route to $GATEWAY"                        >> $DEBUG
+
+    $BIN/route add $GATEWAY $INTF                                    >> $DEBUG
+    RESULT=$?
+  fi
+
+  if [ $RESULT -ne 0 ] ; then
+    echo "   $0 [ERR]: Unable to create a routing path to $GATEWAY"  >> $DEBUG
+  fi
+fi
+
+
+# Add default gateway
+if [ -n "$GATEWAY" -a $RESULT -eq 0 ] ; then
+  echo "   $0 [INF]: Add default route gateway to $GATEWAY"          >> $DEBUG
+
+  $BIN/route add default gw $GATEWAY                                 >> $DEBUG
+  RESULT=$?
+
+  if [ $RESULT -ne 0 ] ; then
+    echo "   $0 [ERR]: Unable to create a routing path to $GATEWAY"  >> $DEBUG
+  fi
+fi
+
+
+if [ $RESULT -ne 0 ] ; then
+  echo "   $0 [ERR]: Unable to set up the routing for $INTF"         >> $DEBUG
+  echo "<- $0 (ret=4)"                                               >> $DEBUG
+  exit 4
+fi
+
+echo "<- $0 (ret=0)"                                                 >> $DEBUG
+exit 0
+

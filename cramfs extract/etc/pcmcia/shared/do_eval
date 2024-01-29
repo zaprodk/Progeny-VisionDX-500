@@ -1,0 +1,16 @@
+#! /bin/sh
+#
+# usage: do_eval <command with parameters>
+#
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG
+#
+# returns: 0-success; 1-error
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/do_eval ($*)"
+
+eval $*
+RET=$?
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/do_eval (ret=$RET)"
+exit $RET

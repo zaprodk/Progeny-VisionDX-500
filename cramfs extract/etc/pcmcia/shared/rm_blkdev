@@ -1,0 +1,51 @@
+#! /bin/sh
+#
+# usage: rm_blkdev [device]
+#
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG
+#               $SCRIPT_DIR/shared/do_fuser
+#               $SCRIPT_DIR/shared/log
+#               $SCRIPT_DIR/shared/is_true
+#               /bin/test
+#               /bin/mount
+#               /bin/umount
+#               /bin/grep
+#               /bin/mv
+#               /bin/rm
+#               /etc/fstab
+#
+# returns: 0-success; 1-error
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/rm_blkdev ($1)"
+
+/bin/test -b $1
+if [ $? -ne 0 ] ; then
+  [ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/rm_blkdev (ret=1)"
+  exit 1
+fi
+
+
+$SCRIPT_PATH/shared/do_fuser -k -m $1 > /dev/null
+
+
+if /bin/mount | /bin/grep -q "$1 on" ; then
+  $SCRIPT_DIR/shared/log /bin/umount -v $1
+  if [ $? -ne 0 ] ; then
+    [ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/rm_blkdev (ret=1)"
+    exit 1
+  fi
+fi
+
+
+if $SCRIPT_DIR/shared/is_true $DO_FSTAB ; then
+  /bin/grep -v $1 /etc/fstab > /etc/fstab.N
+  /bin/mv /etc/fstab.N /etc/fstab
+fi
+
+
+if [ -L "$LINK" ] ; then /bin/rm $LINK ; fi
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/rm_blkdev (ret=0)"
+exit 0

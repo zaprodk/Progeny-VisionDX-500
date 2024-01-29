@@ -1,0 +1,165 @@
+#!/bin/sh
+#
+# usage: dhcp_up interface
+#
+# depends from: $DEBUG, $BIN, $SCRIPT
+#               $BIN/expr
+#               $BIN/ifconfig
+#               $BIN/rm
+#               $BIN/waitCmdRes
+#               $BIN/udhcpc
+#
+# reads from /var/rc/${1}_cfg:
+#             $HOSTNAME
+#
+# returns: 0-success;
+#          1-Error: Wrong Interface
+#          1-Error: External Command or File Is Not Available
+#          1-Error: DHCP is Already Started for This Interface
+#          1-Error: Invalid Configuration File
+#          2-TryAgain: The Access is Already Locked from Somebody Else
+#          3-Error: DHCP Server is not Available
+
+
+if [ -z "$DEBUG"  ] ; then DEBUG="/dev/null"  ; fi
+if [ -z "$BIN"    ] ; then BIN="/bin"         ; fi
+if [ -z "$SCRIPT" ] ; then SCRIPT="/etc"      ; fi
+
+echo "-> $0 ($1)"                                                    >> $DEBUG
+
+
+# Parameters check
+if [ -z "$1" ] ; then
+  echo "   $0 [ERR]: Wrong interface $1"                             >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+else
+  INTF=$1
+fi
+
+
+# Set some constants
+CFG_FILE="/var/rc/${INTF}_cfg"
+LOCK_FILE="/var/rc/${INTF}_dhcp_lock"
+START_FILE="/var/rc/${INTF}_dhcp"
+
+
+# Checks the commands availavility
+if [ ! -x "$BIN/ifconfig" ] ; then
+  echo "   $0 [ERR]: $BIN/ifconfig is not available"                 >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$BIN/expr" ] ; then
+  echo "   $0 [ERR]: $BIN/expr is not available"                     >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$BIN/waitCmdRes" ] ; then
+  echo "   $0 [ERR]: $BIN/waitCmdRes is not available"               >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$BIN/rm" ] ; then
+  echo "   $0 [ERR]: $BIN/rm is not available"                       >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$BIN/udhcpc" ] ; then
+  echo "   $0 [ERR]: $BIN/udhcpc is not available"                   >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Seeds the random generator
+if [ -e "/dev/urandom" ] ; then
+  $BIN/ifconfig > /dev/urandom
+else
+  echo "   $0 [ERR]: Unable to seed the random generator"            >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Lock the access 
+if [ ! -f "$LOCK_FILE" ] ; then
+  echo "$0"  >> "$LOCK_FILE"
+else
+  echo "   $0 [ERR]: The lock file $LOCK_FILE exists"                >> $DEBUG
+  echo "<- $0 (ret=2)"                                               >> $DEBUG
+  exit 2
+fi
+
+
+# Check for previous instances 
+if [ -f "$START_FILE" ] ; then
+  echo "   $0 [ERR]: DHCP is already started for $INTF interface"    >> $DEBUG
+
+  # Unlock the network access
+  $BIN/rm $LOCK_FILE                                                 >> $DEBUG
+
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Get the configuration
+if [ -x "$CFG_FILE" ] ; then
+  . "$CFG_FILE"
+else
+  echo "   $0 [ERR]: Invalid configuration file $CFG_FILE"           >> $DEBUG
+
+  # Unlock the network access
+  $BIN/rm $LOCK_FILE                                                 >> $DEBUG
+
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Starts the DHCP client in background. 
+#  It will start setIP when the IP information is received
+$BIN/udhcpc -H $HOSTNAME -i $INTF & 
+
+
+# Wait for IP to be set
+$BIN/ifconfig > /dev/null
+LOOPS=0
+until [ $LOOPS -gt 100 ] ; do
+  LOOPS=`$BIN/expr "$LOOPS" "+" 1`
+  $BIN/waitCmdRes "`$BIN/ifconfig $INTF`" "inet"                     >> $DEBUG
+  if [ $? -eq 0 ] ; then break ; fi
+done
+
+$BIN/waitCmdRes "`$BIN/ifconfig $INTF`" "inet"                       >> $DEBUG
+if [ $? -ne 0 ] ; then
+  echo "   $0 [ERR]: DHCP server is not available"                   >> $DEBUG
+
+  # Unlock the network access
+  $BIN/rm $LOCK_FILE                                                 >> $DEBUG
+
+  echo "<- $0 (ret=3)"                                               >> $DEBUG
+  exit 3
+fi
+
+
+# Mark DHCP started for this interface
+if [ ! -f "$START_FILE" ] ; then
+  echo "$0"  >> "$START_FILE"
+else
+  echo "   $0 [WRN]: The $START_FILE already exists"                 >> $DEBUG
+fi
+
+
+
+# Unlock the network access
+$BIN/rm $LOCK_FILE                                                   >> $DEBUG
+
+echo "<- $0 (ret=0)"                                                 >> $DEBUG
+exit 0
+

@@ -1,0 +1,69 @@
+#!/bin/sh
+#
+# System startup.
+#
+# This file should be in vendors/Arcturus/uC5272
+#
+# 2002 (C) Cygnus Technologies
+# Lyubomir Cekov, 20021202
+
+
+
+# udhcpc script edited by Tim Riker <Tim@Rikers.org>
+
+RESOLV_CONF="/etc/resolv.conf"
+
+case "undefined$brodcast" in
+  undefined) ;;
+  *)         BROADCAST="broadcast $broadcast"
+esac
+
+case "undefined$netmask" in
+  undefined) ;;
+  *)         NETMASK="netmask $subnet"
+esac
+
+
+case "$1" in
+  deconfig)
+    /bin/ifconfig $interface 0.0.0.0
+    ;;
+
+
+  renew | bound)
+    /bin/ifconfig $interface $ip $BROADCAST $NETMASK
+
+    # Update route table
+    case "undefined$router" in
+      undefined) ;;
+      *)         echo "deleting routers"
+                 while route del default gw 0.0.0.0 dev $interface ; do
+                   :
+                 done
+    
+			     echo defGateway = $router
+                 for i in $router ; do
+                   route add default gw $i dev $interface
+                 done
+    esac
+
+    # Update DNS
+    #echo -n > $RESOLV_CONF
+    #case "undefined$domain" in
+    #  undefined) ;;
+    #  *)         echo search $domain >> $RESOLV_CONF
+    #             for i in $dns ; do
+    #               echo adding dns $i
+    #               echo nameserver $i >> $RESOLV_CONF
+    #             done
+    #esac
+    ;;
+
+
+  nak)
+    echo Received a NAK: $message
+esac
+
+
+exit 0
+

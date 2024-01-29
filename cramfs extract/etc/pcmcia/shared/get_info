@@ -1,0 +1,69 @@
+#! /bin/sh
+#
+# usage: get_info
+#
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $DEVICE, $CLASS, $MANFID
+#               $SCRIPT_DIR/shared/grep_stab
+#               $SCRIPT_DIR/shared/usage
+#               $SCRIPT_DIR/shared/put_result
+#               $SCRIPT_DIR/shared/get_result
+#               $SCRIPT_DIR/shared/grep_stab
+#               /var/lib/pcmcia/scheme or /var/run/pcmcia-scheme
+#               /var/lib/pcmcia/stab or /var/run/stab
+#               /sbin/icardctl
+#
+# returns: 0-success; 1-error
+#          $SCHEME, $STAB,
+#          $SOCKET, $CLASS, $DRIVER, $INSTANCE, $MAJOR, $MINOR
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/get_info ()"
+[ $SCRIPT_DBG -eq 1 ] && echo "   DEVICE=$DEVICE"
+
+if [ -f /var/lib/pcmcia/scheme ] ; then
+  SCHEME=`cat /var/lib/pcmcia/scheme`
+elif [ -f /var/run/pcmcia-scheme ] ; then
+  SCHEME=`cat /var/run/pcmcia-scheme`
+fi	
+
+if [ -z "$SCHEME" ] ; then SCHEME="default" ; fi
+
+
+if [ -z "$CLASS" -o -z "$MANFID" ] ; then
+  if [ -d /var/lib/pcmcia ] ; then
+    STAB=/var/lib/pcmcia/stab
+  else
+    STAB=/var/run/stab
+  fi
+
+
+  $SCRIPT_DIR/shared/grep_stab $DEVICE <$STAB
+  RET=$?
+  . $SCRIPT_DIR/shared/get_result
+
+
+  if [ $RET -ne 0 ] ; then
+    . $SCRIPT_DIR/shared/usage $1
+    RET=$?
+  else
+    [ $SCRIPT_DBG -eq 1 ] && echo "   >> /sbin/cardctl info $SOCKET"
+    /sbin/cardctl info $SOCKET > /dev/null
+    RET=$?
+  fi
+fi
+
+
+$SCRIPT_DIR/shared/put_result SCHEME   $SCHEME
+$SCRIPT_DIR/shared/put_result STAB     $STAB
+$SCRIPT_DIR/shared/put_result SOCKET   $SOCKET
+$SCRIPT_DIR/shared/put_result CLASS    $CLASS
+$SCRIPT_DIR/shared/put_result DRIVER   $DRIVER
+$SCRIPT_DIR/shared/put_result INSTANCE $INSTANCE
+$SCRIPT_DIR/shared/put_result MAJOR    $MAJOR
+$SCRIPT_DIR/shared/put_result MINOR    $MINOR
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/get_info (ret=$RET)"
+exit $RET
+

@@ -1,0 +1,55 @@
+#! /bin/sh
+#
+# usage: set_ip
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $DEVICE, $IPADDR, $NETMASK, $BROADCAST, $MTU,
+#               $NETWORK, $GATEWAY
+#               $SCRIPT_DIR/shared/log
+#               /bin/ifconfig
+#               /sbin/ifuser
+#               /bin/route
+#
+# returns: 0-success; 1-error
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/set_ip ()"
+
+# Basic network setup
+if [ -n $NETMASK ]; then
+  NM="netmask $NETMASK"
+fi
+
+if [ -n $BROADCAST ]; then
+  BC="broadcast $BROADCAST"
+fi
+
+if [ -n $MTU ]; then
+  MTU="mtu $MTU"
+fi
+
+RET=0
+$SCRIPT_DIR/shared/log /bin/ifconfig $DEVICE $IPADDR $NM $BC $MTU up
+if [ -n "$NETWORK" ] ; then
+  [ $SCRIPT_DBG -eq 1 ] && echo "   >   NETWORK part"
+  /sbin/ifuser $DEVICE $NETWORK || \
+  $SCRIPT_DIR/shared/log /bin/route add -net $NETWORK $NM dev $DEVICE
+  RET=$?
+
+elif [ -n "$GATEWAY" ] ; then
+  [ $SCRIPT_DBG -eq 1 ] && echo "   >   GATEWAY part"
+  /sbin/ifuser $DEVICE $GATEWAY || \
+  $SCRIPT_DIR/shared/log /bin/route add $GATEWAY $DEVICE
+  RET=$?
+
+fi
+
+
+if [ -n "$GATEWAY" -a $RET -eq 0 ] ; then
+  [ $SCRIPT_DBG -eq 1 ] && echo "   >   default GATEWAY part"
+  /bin/route add default gw $GATEWAY metric 1
+  RET=$?
+fi
+    
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/set_ip (ret=$RET)"
+exit $RET
+

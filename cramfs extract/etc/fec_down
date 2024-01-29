@@ -1,0 +1,231 @@
+#!/bin/sh
+#
+# usage: fec_down interface
+#
+# depends from: $DEBUG, $BIN, $SCRIPT
+#               $BIN/ifconfig
+#               $BIN/rm
+#               $SCRIPT/dhcp_down
+#               $SCRIPT/dhcpd_down
+#               $SCRIPT/nfs_down
+#               #$SCRIPT/setIP
+#
+# returns: 0-success;
+#          1-Error: Wrong Interface
+#          1-Error: External Command or File Is Not Available
+#          1-Error: The Interface is not Started
+#          1-Error: Invalid Configuration File
+#          2-TryAgain: The Access is Already Locked from Somebody Else
+#          3-Error: Unable to Turn on Interface
+#          4-Error: dhcp_down Returns Non-zero
+#          #5-Error: setIP Returns Non-zero
+#          6-Error: dhcpd_down Returns Non-zero
+#          7-Error: nfs_down Returns Non-zero
+
+
+if [ -z "$DEBUG"  ] ; then DEBUG="/dev/null"  ; fi
+if [ -z "$BIN"    ] ; then BIN="/bin"         ; fi
+if [ -z "$SCRIPT" ] ; then SCRIPT="/etc"      ; fi
+
+echo "-> $0 ($1)"                                                    >> $DEBUG
+
+# Parameters check
+if [ -z "$1" ] ; then
+  echo "   $0: Error: Wrong interface"                               >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+else
+  INTF=$1
+fi
+
+# Set some constants
+CFG_FILE="/var/rc/${INTF}_cfg"
+LOCK_FILE="/var/rc/${INTF}_lock"
+START_FILE="/var/rc/${INTF}_started"
+
+
+# Checks the commands availavility
+if [ ! -x "$BIN/ifconfig" ] ; then
+  echo "   $0 [ERR]: $BIN/ifconfig is not available"                 >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$BIN/rm" ] ; then
+  echo "   $0 [ERR]: $BIN/rm is not available"                       >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Check the current network state
+if [ ! -f "$START_FILE" ] ; then
+  echo "   $0 [ERR]: The $INTF interface is not started"             >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Lock the network access
+if [ ! -f "$LOCK_FILE" ] ; then
+  echo "$0"  >> "$LOCK_FILE"
+else
+  echo "   $0 [ERR]: The lock file $LOCK_FILE exists"                >> $DEBUG
+  echo "<- $0 (ret=2)"                                               >> $DEBUG
+  exit 2
+fi
+
+
+# Get the configuration
+if [ -x "$CFG_FILE" ] ; then
+  . "$CFG_FILE"
+else
+  echo "   $0 [ERR]: Invalid configuration file $CFG_FILE"           >> $DEBUG
+
+  # Unlock the network access
+  $BIN/rm $LOCK_FILE                                                 >> $DEBUG
+
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Stops NFS support except in SELF mode
+if [ "$ENABLE_DHCP" != "2" -a -n "$NFSREMOTE" -a -n "$NFSLOCAL" ] ; then
+  
+  if [ -x "$SCRIPT/nfs_down" ] ; then
+    $SCRIPT/nfs_down $INTF                                           >> $DEBUG
+    RESULT=$?
+  else
+    echo "   $0 [ERR]: $SCRIPT/nfs_down is not available"            >> $DEBUG
+
+    # Unlock the network access
+    $BIN/rm $LOCK_FILE                                               >> $DEBUG
+
+    echo "<- $0 (ret=1)"                                             >> $DEBUG
+    exit 1
+  fi
+
+  if [ $RESULT -ne 0 ] ; then
+    echo "   $0 [ERR]: $SCRIPT/nfs_down returns $RESULT"             >> $DEBUG
+
+    # Unlock the network access
+    $BIN/rm $LOCK_FILE                                               >> $DEBUG
+
+    echo "<- $0 (ret=7)"                                             >> $DEBUG
+    exit 7
+  fi
+fi
+
+
+if [ "$ENABLE_DHCP" = "1" ] ; then
+
+  # Stops DHCP client if DHCP mode
+  echo "   $0 [INF]: Stopping DHCP client for $INTF ..."             >> $DEBUG
+  
+  if [ -x "$SCRIPT/dhcp_down" ] ; then
+    $SCRIPT/dhcp_down $INTF                                          >> $DEBUG
+    RESULT=$?
+  else
+    echo "   $0 [ERR]: $SCRIPT/dhcp_down is not available"           >> $DEBUG
+
+    # Unlock the network access
+    $BIN/rm $LOCK_FILE                                               >> $DEBUG
+
+    echo "<- $0 (ret=1)"                                             >> $DEBUG
+    exit 1
+  fi
+
+  if [ $RESULT -ne 0 ] ; then
+    echo "   $0 [ERR]: $SCRIPT/dhcp_down returns $RESULT"            >> $DEBUG
+
+    # Unlock the network access
+    $BIN/rm $LOCK_FILE                                               >> $DEBUG
+
+    echo "<- $0 (ret=4)"                                             >> $DEBUG
+    exit 4
+  fi
+
+else
+
+#  # Frees IP address
+#  if [ -x "$SCRIPT/setIP" ] ; then
+#    $SCRIPT/setIP $INTF                                              >> $DEBUG
+#    RESULT=$?
+#  else
+#    echo "   $0 [ERR]: $SCRIPT/setIP is not available"               >> $DEBUG
+#
+#    # Unlock the network access
+#    $BIN/rm $LOCK_FILE                                               >> $DEBUG
+#
+#    echo "<- $0 (ret=1)"                                             >> $DEBUG
+#    exit 1
+#  fi
+#  if [ $RESULT -ne 0 ] ; then
+#    echo "   $0 [ERR]: $SCRIPT/setIP returns $RESULT"                >> $DEBUG
+#
+#    # Unlock the network access
+#    $BIN/rm $LOCK_FILE                                               >> $DEBUG
+#
+#    echo "<- $0 (ret=5)"                                             >> $DEBUG
+#    exit 5
+#  fi
+
+  # Stops DHCP server in SELF mode
+  if [ "$ENABLE_DHCP" = "2" ] ; then
+  
+    if [ -x "$SCRIPT/dhcpd_down" ] ; then
+      $SCRIPT/dhcpd_down $INTF                                       >> $DEBUG
+      RESULT=$?
+    else
+      echo "   $0 [ERR]: $SCRIPT/dhcpd_down is not available"        >> $DEBUG
+
+      # Unlock the network access
+      $BIN/rm $LOCK_FILE                                             >> $DEBUG
+
+      echo "<- $0 (ret=1)"                                           >> $DEBUG
+      exit 1
+    fi
+
+    if [ $RESULT -ne 0 ] ; then
+      echo "   $0 [ERR]: $SCRIPT/dhcpd_down returns $RESULT"           >> $DEBUG
+
+      # Unlock the network access
+      $BIN/rm $LOCK_FILE                                             >> $DEBUG
+
+      echo "<- $0 (ret=6)"                                           >> $DEBUG
+      exit 6
+    fi
+  fi
+fi
+
+
+# Turn OFF $INTF
+echo "   $0 [INF]: Turns on $INTF"                                   >> $DEBUG
+$BIN/ifconfig $INTF down                                             >> $DEBUG
+if [ $? -ne 0 ] ; then
+  echo "   $0 [ERR]: Unable to turn off $INTF"                       >> $DEBUG
+
+  # Unlock the network access
+  $BIN/rm $LOCK_FILE                                                 >> $DEBUG
+
+  echo "<- $0 (ret=3)"                                               >> $DEBUG
+  exit 3
+fi
+
+
+# Mark the interface as stopped
+if [ -f "$START_FILE" ] ; then
+  $BIN/rm $START_FILE                                                >> $DEBUG
+else
+  echo "   $0 [WRN]: The $START_FILE do not exists"                  >> $DEBUG
+fi
+
+
+# Unlock the network access
+$BIN/rm $LOCK_FILE                                                   >> $DEBUG
+
+
+echo "<- $0 (ret=0)"                                                 >> $DEBUG
+exit 0
+

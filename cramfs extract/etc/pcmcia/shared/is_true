@@ -1,0 +1,25 @@
+#! /bin/sh
+#
+# usage: is_true variable
+#
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $VERBOSE
+#               ;$SCRIPT_DIR/shared/do_eval
+#               ;/bin/cat
+#               ;/bin/rm
+#
+# returns: 0-success; 1-error
+
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/is_true ($1)"
+
+case $1 in
+  "y" | "Y" | "yes" | "YES")  RET=0
+                              ;;
+  *)                          RET=1
+                              ;;
+esac
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/is_true (ret=$RET)"
+exit $RET

@@ -1,0 +1,5 @@
+#! /bin/sh
+#
+
+/etc/pcmcia/shared/network_e $* >> /tmp/net.log 2>&1
+

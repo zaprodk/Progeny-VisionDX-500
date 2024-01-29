@@ -1,0 +1,20 @@
+#! /bin/sh
+#
+# usage: match variable pattern
+#
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#
+# returns: 0-yes; 1-no
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/match ($1, $2)"
+
+case $1 in 
+  $2) RET=0
+      ;; 
+  *)  RET=1
+      ;;
+esac
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/match (ret=$RET)"
+exit $RET

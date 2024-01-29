@@ -1,0 +1,3 @@
+kill -USR1 %1
+kill -TERM %1
+dumpleases -f /var/udhcpd.leases

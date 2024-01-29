@@ -1,0 +1,37 @@
+#! /bin/sh
+#
+# usage: put_result file var_name var_value ["remove" to remove from env.]
+#
+# depends from: /bin/chmod
+#
+# returns: 0-success; 1-error
+
+
+if [ -z "$DEBUG"  ] ; then DEBUG="/dev/null"  ; fi
+if [ -z "$BIN" ] ; then BIN="/bin" ; fi
+
+FILE=$1
+NAME=$2
+VALUE=$3
+EN_DEL=$4
+
+if [ ! -x "$BIN/chmod" ] ; then
+  echo "   $0 [ERR]: $BIN/chmod is not available"                    >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$FILE" ] ; then
+  echo "#! /bin/sh"          >  $FILE
+  $BIN/chmod 777 $FILE
+  echo "#"                   >> $FILE
+fi
+
+if [ $EN_DEL = "remove" ]
+  echo "set - "$NAME         >> $FILE
+fi
+
+echo $NAME"="$VALUE          >> $FILE
+echo "export "$NAME          >> $FILE
+
+exit 0

@@ -1,0 +1,46 @@
+#! /bin/sh
+# usage: chk_parts script [new-address]
+#
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $ADDRESS, $PARTS
+#               $SCRIPT_DIR/shared/chk_simple
+#
+# returns: 0-success; 1-error
+#          $ADDRESS
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/chk_parts ($1 $2)"
+
+
+OLD_ADDR="$ADDRESS"
+
+$SCRIPT_DIR/shared/chk_simple $2
+if [ $? -ne 0] ; then
+  [ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/chk_parts (ret=1)"
+  exit 1
+fi
+
+
+if [ -z "$PARTS" ] ; then 
+  [ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/chk_parts (ret=0)"
+  exit 0
+fi
+
+
+for PART in $PARTS ; do
+  ADDRESS="$OLD_ADDR,$PART"
+  . $1.opts                    ????? result; remove .
+
+  $SCRIPT_DIR/shared/chk_simple "$2,$PART"
+  if [ $? -ne 0] ; then
+    [ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/chk_parts (ret=1)"
+    exit 1
+  fi
+done
+
+return everything from $1.opts
+return $ADDRESS as result too
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/chk_parts (ret=0)"
+exit 0
+

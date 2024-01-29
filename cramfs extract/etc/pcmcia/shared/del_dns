@@ -1,0 +1,22 @@
+#! /bin/sh
+#
+# usage: del_dns
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $DEVICE, $RESOLV
+#               /bin/grep
+#               /bin/sed
+#               /bin/mv
+#
+# returns: 0-success; 1-error
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/del_dns ()"
+
+if /bin/grep -q "# $DEVICE begin" $RESOLV ; then
+  /bin/sed -e "/# $DEVICE begin/,/# $DEVICE end/d"  $RESOLV > $RESOLV.N
+  /bin/mv $RESOLV.N $RESOLV
+fi
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/del_dns (ret=0)"
+exit 0
+

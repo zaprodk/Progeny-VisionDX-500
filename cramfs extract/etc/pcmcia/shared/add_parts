@@ -1,0 +1,37 @@
+#! /bin/sh
+#
+# usage: add_parts [address] [parts] [script]
+#
+# depends from: $SCRIPT_DIR, $SCRIPT_DBG,
+#               $INFO, $DO_FSTAB, $DO_FSCK, $DO_MOUNT, $LINK
+#               $DEVICE
+#               $SCRIPT_DIR/shared/add_blkdev
+#               unset <---------------------
+#
+# returns: 0-success; 1-error
+
+
+[ $SCRIPT_DBG -eq 1 ] && echo " -> $SCRIPT_DIR/shared/add_parts ($1, $2, $3)"
+
+RET=0
+if [ -n $2 ] ; then
+  LIST=$2
+else
+  LIST=""
+fi
+
+for PART in $LIST ; do
+  # Get mount options for particular partitions
+  if [ -n "$PART" ] ; then
+    ADDRESS="$1,$PART"
+    unset INFO DO_FSTAB DO_FSCK DO_MOUNT LINK
+    . $SCRIPT_DIR/$3.opts
+    [ -n "$VERBOSE" -a -n "$INFO" ] && echo "$INFO"
+  fi
+
+  $SCRIPT_DIR/shared/add_blkdev /dev/$DEVICE$PART || RET=1
+done
+
+[ $SCRIPT_DBG -eq 1 ] && echo " <- $SCRIPT_DIR/shared/add_parts (ret=$RET)"
+exit $RET
+

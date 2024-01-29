@@ -1,0 +1,140 @@
+#!/bin/sh
+#
+# usage: dhcpd_down interface
+#
+# depends from: $DEBUG, $BIN, $SCRIPT, $SHELL
+#               $BIN/killproc
+#               $BIN/rm
+#               $BIN/udhcpd
+#
+# returns: 0-success;
+#          1-Error: Wrong Interface
+#          1-Error: External Command or File Is Not Available
+#          1-Error: DHCPD is not Started for This Interface
+#          2-TryAgain: The Access is Already Locked from Somebody Else
+#          3-Error: Unable to Stop DHCPD Server
+
+
+if [ -z "$DEBUG"  ] ; then DEBUG="/dev/null"  ; fi
+if [ -z "$BIN"    ] ; then BIN="/bin"         ; fi
+if [ -z "$SCRIPT" ] ; then SCRIPT="/etc"      ; fi
+if [ -z "$SHELL"  ] ; then SHELL="/bin/sh"    ; fi
+
+echo "-> $0 ($1)"                                                    >> $DEBUG
+
+
+# Parameters check
+if [ -z "$1" ] ; then
+  echo "   $0 [ERR]: Wrong interface $1"                             >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+else
+  INTF=$1
+fi
+
+
+# Set some constants
+CFG_FILE="/var/rc/${INTF}_cfg"
+LOCK_FILE="/var/rc/${INTF}_dhcpd_lock"
+START_FILE="/var/rc/${INTF}_dhcpd"
+INSTANCE_FILES="/var/rc/*_dhcpd"
+
+
+# Checks the commands availavility
+if [ ! -x "$BIN/rm" ] ; then
+  echo "   $0 [ERR]: $BIN/rm is not available"                       >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$BIN/killproc" ] ; then
+  echo "   $0 [ERR]: $BIN/killproc is not available"                 >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ ! -x "$BIN/udhcpd" ] ; then
+  echo "   $0 [ERR]: $BIN/udhcpd is not available"                   >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+
+# Lock the access 
+if [ ! -f "$LOCK_FILE" ] ; then
+  echo "$0"  >> "$LOCK_FILE"
+else
+  echo "   $0 [ERR]: The lock file $LOCK_FILE exists"                >> $DEBUG
+  echo "<- $0 (ret=2)"                                               >> $DEBUG
+  exit 2
+fi
+
+
+# Check for previous instances 
+if [ ! -f "$START_FILE" ] ; then
+  echo "   $0 [ERR]: DHCPD is not started for $INTF interface"       >> $DEBUG
+
+  # Unlock the network access
+  $BIN/rm $LOCK_FILE                                                 >> $DEBUG
+
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+NUM_INST=0
+for i in $INSTANCE_FILES ; do
+  NUM_INST=`$BIN/expr "$NUM_INST" "+" 1`
+done
+
+echo "   $0 [INF]: DHCPD demon is started for $NUM_INST interfaces"  >> $DEBUG
+
+if [ $NUM_INST -eq 1 ] ; then
+#  # Get the configuration
+#  if [ -x "$CFG_FILE" ] ; then
+#    . "$CFG_FILE"
+#  else
+#    echo "   $0 [ERR]: Invalid configuration file $CFG_FILE"          >> $DEBUG
+#
+#    # Unlock the network access
+#    $BIN/rm $LOCK_FILE                                                >> $DEBUG
+#
+#    echo "<- $0 (ret=1)"                                              >> $DEBUG
+#    exit 1
+#  fi
+
+  # Stops the DHCPD server 
+  echo "   $0 [INF]: Stops DHCPD server"                             >> $DEBUG
+
+  $BIN/killproc -9 "$BIN/udhcpd"                                     >> $DEBUG
+  RESULT=$?
+  
+  if [ $RESULT -ne 0 ] ; then
+    echo "   $0 [ERR]: Unable to stop the DHCPD server"               >> $DEBUG
+
+    # Unlock the network access
+    $BIN/rm $LOCK_FILE                                               >> $DEBUG
+
+    echo "<- $0 (ret=3)"                                             >> $DEBUG
+    exit 3
+  fi
+
+else
+  echo "   $0 [INF]: DHCPD demon is still active for other interface" >> $DEBUG
+fi
+
+
+# Mark DHCPD stopped for this interface
+if [ -f "$START_FILE" ] ; then
+  $BIN/rm $START_FILE                                                >> $DEBUG
+else
+  echo "   $0 [WRN]: The $START_FILE do not exists"                  >> $DEBUG
+fi
+
+# Unlock the network access
+$BIN/rm $LOCK_FILE                                                   >> $DEBUG
+
+echo "<- $0 (ret=0)"                                                 >> $DEBUG
+exit 0
+

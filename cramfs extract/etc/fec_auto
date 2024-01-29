@@ -1,0 +1,116 @@
+#!/bin/sh
+#
+# usage: fec_up interface
+#
+# depends from: $DEBUG, $BIN, $SCRIPT, $CONSOLE
+#               $BIN/dirname
+#               $BIN/mii-tool-fec
+#               $BIN/sleep
+#               $BIN/waitCmdRes
+#               $SCRIPT/fec_up
+#               $SCRIPT/fec_down
+#
+# returns: 0-success; <>0-error
+
+ 
+if [ -z "$DEBUG"  ] ; then DEBUG="/dev/null"       ; fi
+if [ -z "$BIN"    ] ; then BIN="/bin"              ; fi
+if [ -z "$SCRIPT" ] ; then SCRIPT="/etc"           ; fi
+if [ -z "$CONSOLE" ] ; then CONSOLE="/dev/console" ; fi
+
+echo "-> $0 ($1)"                                                    >> $DEBUG
+
+
+# Parameters check
+if [ -z "$1" ] ; then
+  echo "   $0 [ERR]: Unknown interface $1"                           >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+else
+  INTF=$1
+fi
+
+if [ -x "$BIN/waitCmdRes" -a -x "$BIN/mii-tool-fec" ] ; then
+  $BIN/waitCmdRes "`$BIN/mii-tool-fec $INTF 2>&1`" "SIOCGMIIPHY"     >> $DEBUG
+  IS_DOWN=$?
+else
+  echo "   $0 [ERR]: Unable to check $INTF status"                   >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ $IS_DOWN -eq 0 ] ; then
+  echo "   $0 [ERR]: Wrong interface $INTF"
+  echo "   $0 [ERR]: Wrong interface $INTF"                          >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Set some constants
+LOCK_FILE="/var/rc/${INTF}_lock"
+START_FILE="/var/rc/${INTF}_started"
+
+
+# Initalizes the network
+$BIN/ifconfig $INTF up                                               >> $DEBUG
+$BIN/ifconfig $INTF down                                             >> $DEBUG
+
+
+# Read a current network state
+if [ -x "$BIN/waitCmdRes" -a -x "$BIN/mii-tool-fec" ] ; then
+  $BIN/waitCmdRes "`$BIN/mii-tool-fec $INTF`" "link ok"              >> $DEBUG
+  IS_DOWN=$?
+else
+  echo "   $0 [ERR]: Unable to check $INTF link status"              >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ -x "$START_FILE" ] ; then
+  WAS_DOWN=0
+else
+  WAS_DOWN=1
+fi
+
+echo "   $0 [INF]: IS_DOWN=$IS_DOWN, WAS_DOWN=$WAS_DOWN"             >> $DEBUG
+
+
+# Monitors the network
+while [ -n "always" ] ; do
+  if [ ! -f "$LOCK_FILE" -a -x "$BIN/waitCmdRes" \
+       -a -x "$BIN/mii-tool-fec" ] ; then
+      $BIN/waitCmdRes "`$BIN/mii-tool-fec $INTF`" "link ok" >> /dev/null
+      IS_DOWN=$?
+  fi
+
+  if [ $IS_DOWN -ne $WAS_DOWN ] ; then 
+    if [ $IS_DOWN -eq 0 ] ; then
+      if [ -x "$SCRIPT/fec_up" ] ; then
+        $SCRIPT/fec_up $INTF                                         >> $DEBUG
+#        $SCRIPT/fec_down $INTF                                       >> $DEBUG
+#        $SCRIPT/fec_up $INTF                                         >> $DEBUG
+      fi
+    else
+      if [ -x "$SCRIPT/fec_down" ] ; then
+        $SCRIPT/fec_down $INTF                                       >> $DEBUG
+      fi
+    fi
+
+    if [ $? -eq 0 ] ; then
+      WAS_DOWN=$IS_DOWN
+    else
+      echo "   $0 [WRN]: Unable to update $INTF interface ($IS_DOWN)" >> $DEBUG
+    fi
+  fi
+
+  if [ -x "$BIN/sleep" ] ; then
+    $BIN/sleep 1
+  else
+    echo "   $0 [WRN]: $BIN/sleep is not available"                 >> $DEBUG
+  fi
+done
+
+
+echo "<- $0 (ret=0)"                                                 >> $DEBUG
+exit 0

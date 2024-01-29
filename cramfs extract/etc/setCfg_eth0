@@ -1,0 +1,184 @@
+#!/bin/sh
+#
+# usage: setCfg_eth0
+#
+# depends from: $DEBUG, $BIN, $SCRIPT
+#               $BIN/dirname
+#               $BIN/getCfgParam
+#               $BIN/mkdir
+#               $BIN/rm
+#
+# writes to /var/rc/{1}_cfg:
+#               HOSTNAME, ENABLE_DHCP, IP, NETMASK, NETMASK_E, GATEWAY,
+#               GATEWAY_E, BROADCAST, BROADCAST_E, MTU, MTU_E, NETWORK,
+#               NFSREMOTE, NFSLOCAL
+#
+# returns: 0-success; <>0-error
+
+
+if [ -z "$DEBUG"  ] ; then DEBUG="/dev/null"  ; fi
+if [ -z "$BIN"    ] ; then BIN="/bin"         ; fi
+if [ -z "$SCRIPT" ] ; then SCRIPT="/etc"      ; fi
+
+echo "-> $0 ()"                                                      >> $DEBUG
+
+INTF="eth0"
+
+# Set configuration file name and directory
+CFG_FILE="/var/rc/${INTF}_cfg"
+
+if [ -x "$BIN/dirname" ] ; then
+  CFG_DIR=`$BIN/dirname "$CFG_FILE"`
+else
+  echo "   $0 [ERR]: $BIN/dirname is not available"                  >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Create the directory for the configuration file
+# = $BIN/mkdir -p $CFG_DIR >> $DEBUG
+if [ ! -d "$CFG_DIR" -a -x "$BIN/mkdir" ] ; then
+  $BIN/mkdir $CFG_DIR                                                >> $DEBUG
+fi
+
+if [ ! -d "$CFG_DIR" ] ; then
+  echo "   $0 [ERR]: Unable to create $CFG_DIR directory"            >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Remove the configuration file if it is needed
+if [ -f "$CFG_FILE" -a -x "$BIN/rm" ] ; then
+  $BIN/rm $CFG_FILE >> /dev/null
+fi
+
+if [ -f "$CFG_FILE" ] ; then
+  echo "   $0 [ERR]: Unable to delete file $CFG_FILE"                >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Set some basic configuration parameters
+if [ -x "$BIN/getCfgParam" ] ; then
+  HOSTNAME=`$BIN/getCfgParam HOST_ID`                                >> $DEBUG
+  IP=`$BIN/getCfgParam HOST_IP`                                      >> $DEBUG
+  NETMASK=`$BIN/getCfgParam NET_MASK`                                >> $DEBUG
+  GATEWAY=`$BIN/getCfgParam GATEWAY`                                 >> $DEBUG
+  BROADCAST=`$BIN/getCfgParam BROADCAST`                             >> $DEBUG
+  NETWORK=`$BIN/getCfgParam NETWORK`                                 >> $DEBUG
+  MTU=`$BIN/getCfgParam MTU`                                         >> $DEBUG
+  NFSREMOTE=`$BIN/getCfgParam NFS_HOST`                              >> $DEBUG
+  NFSLOCAL="/mnt"
+  ETHERNEG=`$BIN/getCfgParam ETHERNEG`                               >> $DEBUG
+else
+  echo "   $0 [ERR]: $BIN/getCfgParam is not available"              >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+
+# Detects SELF and DHCP configurations
+case "$IP" in
+"self"|"SELF") ENABLE_DHCP="2"
+               ;;
+
+"dhcp"|"DHCP") ENABLE_DHCP="1"
+               ;;
+
+*)             case "$NETMASK" in
+                 "self"|"SELF") ENABLE_DHCP="2"
+                                ;;
+
+                 "dhcp"|"DHCP") ENABLE_DHCP="1"
+                                ;;
+
+                 *)             ENABLE_DHCP="0"
+                                ;;
+               esac
+esac
+
+
+# Assign some SELF and DHCP specific values
+case "$ENABLE_DHCP" in
+"2") IP=192.168.100.190
+     NETMASK=255.255.255.0
+     ;;
+
+"1") IP=""
+     NETMASK=""
+     ;;
+esac
+
+
+# Create the configuration
+if [ ! -x "$SCRIPT/put_result" ] ; then
+  echo "   $0 [ERR]: $SCRIPT/put_result is not available"            >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ -n "$HOSTNAME" ] ; then
+  $SCRIPT/put_result "$CFG_FILE" "HOSTNAME" "\"$HOSTNAME\"" "remove"
+else
+  $SCRIPT/put_result "$CFG_FILE" "HOSTNAME" "\"MPS4\"" "remove"
+fi
+
+$SCRIPT/put_result "$CFG_FILE" "ENABLE_DHCP" "\"$ENABLE_DHCP\"" "remove"
+
+if [ -n "$IP" ] ; then
+  $SCRIPT/put_result "$CFG_FILE" "IP" "\"$IP\"" "remove"
+elif ["$ENABLE_DHCP" != "1"]
+  echo "   $0 [ERR]: Unknown IP"
+  echo "   $0 [ERR]: Unknown IP"                                     >> $DEBUG
+  echo "<- $0 (ret=1)"                                               >> $DEBUG
+  exit 1
+fi
+
+if [ -n "$NETMASK" ] ; then
+  $SCRIPT/put_result "$CFG_FILE" "NETMASK"   "\"$NETMASK\""         "remove"
+  $SCRIPT/put_result "$CFG_FILE" "NETMASK_E" "\"netmask $NETMASK\"" "remove"
+fi
+
+if [ -n "$GATEWAY" -a                                   \
+     "$GATEWAY" != "self" -a "$GATEWAY" != "SELF" -a    \
+     "$GATEWAY" != "dhcp" -a "$GATEWAY" != "DHCP" -a    \
+     "$GATEWAY" != "none" -a "$GATEWAY" != "NONE"    ] ; then
+echo "Put GATEWAY" >> $DEBUG
+  $SCRIPT/put_result "$CFG_FILE" "GATEWAY"   "\"$GATEWAY\""    "remove"
+  $SCRIPT/put_result "$CFG_FILE" "GATEWAY_E" "\"gw $GATEWAY\"" "remove"
+else
+echo "Else Put GATEWAY" >> $DEBUG
+fi
+echo "After Put GATEWAY" >> $DEBUG
+
+if [ -n "$BROADCAST" ] ; then
+  $SCRIPT/put_result "$CFG_FILE" "BROADCAST"   "\"$BROADCAST\"" "remove"
+  $SCRIPT/put_result "$CFG_FILE" "BROADCAST_E" "\"broadcast $BROADCAST\"" \
+                                                                "remove"
+fi
+
+if [ -n "$NETWORK" ] ; then
+  $SCRIPT/put_result "$CFG_FILE" "NETWORK" "\"$NETWORK\"" "remove"
+fi
+
+if [ -n "$MTU" ] ; then
+  $SCRIPT/put_result "$CFG_FILE" "MTU"   "\"$MTU\""     "remove"
+  $SCRIPT/put_result "$CFG_FILE" "MTU_E" "\"mtu $MTU\"" "remove"
+fi
+
+if [ -n "$NFSREMOTE" -a -n "$NFSLOCAL" ] ; then
+  $SCRIPT/put_result "$CFG_FILE" "NFSREMOTE" "\"$NFSREMOTE\"" "remove"
+  $SCRIPT/put_result "$CFG_FILE" "NFSLOCAL"  "\"$NFSLOCAL\""  "remove"
+fi
+
+if [ -n "$ETHERNEG" ] ; then
+  $SCRIPT/put_result "$CFG_FILE" "ETHERNEG" "\"$ETHERNEG\"" "remove"
+fi
+
+
+# End
+echo "<- $0 (ret=0)"                                                 >> $DEBUG
+exit 0
